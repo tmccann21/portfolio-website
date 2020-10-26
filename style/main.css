@@ -1,0 +1,152 @@
+body {
+  background-color: #fffef8; 
+  margin: 0px;
+  border-top: 1em solid #00a0a0;
+}
+
+h1 {
+  color: #000;
+  margin: 0px;
+  font-size: 3em;
+}
+
+#content {
+  max-width: 36em;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0px 20px;
+  margin-top: 4em;
+  font-family: Helvetica;
+
+  color: #456;
+}
+
+#header {
+  padding-top: 20px;
+  display: flex;
+  align-items: center;
+  max-width: 100vw;
+  margin-bottom: 70px;
+  flex-direction: column;
+}
+
+#nav {
+  display: flex;
+  align-items: center;
+}
+
+#header a {
+  font-size: 1.5em;
+  padding: 5px 25px 5px 25px;
+  text-decoration: none;
+}
+
+#header a:link {
+  color: black;
+}
+
+#header a:visited {
+  color: black;
+}
+
+#header a:hover {
+  color: #00a0a0
+}
+
+#header a:active {
+  color: black;
+}
+
+.articlce {
+  width: 100%
+}
+
+/* Ideal width for 16px font size. */
+@media(min-width: 400px)
+{
+  #content
+  {
+    margin-top: 1.5em;
+    padding-left: 2em;
+    padding-right: 2em;
+  }
+}
+
+@media(min-width: 470px)
+{
+  html { font-size: 17px; }
+
+  /* Add some margin to the heading to make it line-wrap nicer. Smaller
+   * viewports get more room because the words might not fit otherwise. */
+  header
+  {
+    margin-left: 2.8em;
+    margin-right: 2.8em;
+  }
+}
+
+@media(min-width: 544px)
+{
+  #content
+  {
+    padding-left: 2.8em;
+    padding-right: 2.8em;
+  }
+
+  /* Hang list numbers and bullets in the margin when there is enough space. */
+  li
+  {
+    margin-left: 0;
+  }
+}
+
+@media(min-width: 625px)
+{
+  html { font-size: 18px; }
+
+  #header {
+    flex-direction: row;
+  }
+ /* Full-width headings have been line-wrapped manually for a more balanced
+  * result than what the browser would do. Even though at this size the line
+  * width is not yet 36em, titles that need breaking are typically much
+  * shorter per line, so this should fit. */
+  h1 > br
+  {
+    display: block;
+  }
+}
+
+/* At this width, the viewport is wide enough to fit the content at its
+ * maximum width (36em). */
+@media(min-width: 802px)
+{
+  html { font-size: 19px; }
+
+  /* If we are on a large-ish screen anyway, give the header some room to
+   * breathe. */
+  header
+  {
+    margin-top: 1.4em;
+    margin-bottom: 1.4em;
+  }
+
+  #content
+  {
+    margin-top: 3.5em;
+  }
+}
+
+@media(min-width: 1003px)
+{
+  html { font-size: 20px; }
+}
+
+@media(min-width: 1225px)
+{
+  html { font-size: 21px; }
+}
+
+@media(min-width: 1496px) { html { font-size: 22px; } }
+@media(min-width: 1736px) { html { font-size: 23px; } }
+@media(min-width: 2025px) { html { font-size: 24px; } }
