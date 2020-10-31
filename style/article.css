@@ -1,0 +1,13 @@
+.article-title {
+    padding-bottom: 1em;
+}
+
+.article-date {
+    color: #748ea8;
+    margin-top: 0.5em;
+    font-size: 1em;
+}
+
+.article-content {
+    font-size: 1.2em;
+}

@@ -1,75 +1,104 @@
 body {
+  font-family: Helvetica, serif;
   background-color: #fffef8; 
-  margin: 0px;
+  margin: 0;
   border-top: 1em solid #00a0a0;
 }
 
 h1 {
   color: #000;
-  margin: 0px;
-  font-size: 3em;
+  margin: 0;
+}
+
+h2 {
+  color: #000;
+  margin: 0;
+  font-size: 2.5em;
+}
+
+p {
+  margin: 0;
 }
 
 #content {
   max-width: 36em;
   margin-left: auto;
   margin-right: auto;
-  padding: 0px 20px;
+  padding: 0 20px;
   margin-top: 4em;
-  font-family: Helvetica;
-
   color: #456;
 }
 
 #header {
-  padding-top: 20px;
   display: flex;
   align-items: center;
   max-width: 100vw;
-  margin-bottom: 70px;
   flex-direction: column;
+  margin-bottom: 2em;
 }
 
-#nav {
-  display: flex;
-  align-items: center;
-}
-
-#header a {
-  font-size: 1.5em;
-  padding: 5px 25px 5px 25px;
-  text-decoration: none;
-}
-
-#header a:link {
+.header-link:link, .header-link:visited, .header-link:active {
   color: black;
 }
 
-#header a:visited {
-  color: black;
-}
-
-#header a:hover {
+.header-link:hover {
   color: #00a0a0
 }
 
-#header a:active {
-  color: black;
-}
-
-.articlce {
-  width: 100%
-}
-
-/* Ideal width for 16px font size. */
-@media(min-width: 400px)
+@media(min-width: 330px)
 {
+  html { font-size: 16px; }
+
+  h1 {
+    font-size: 2.05em
+  }
+
+  #header {
+    padding-top: .7em;
+    margin-bottom: 2em;
+  }
+
   #content
   {
-    margin-top: 1.5em;
-    padding-left: 2em;
-    padding-right: 2em;
+    margin-top: 2em;
+    padding-left: 2.8em;
+    padding-right: 2.8em;
   }
+
+  .small-screen { display: initial; }
+  .normal-screen { display: none; }
+
+  .header-link {
+    font-size: 1.3em;
+    padding: 8px 10px 5px 10px;
+    text-decoration: none;
+  }
+}
+
+@media(min-width: 400px) {
+  h1 {
+    font-size: 2.7em
+  }
+
+  #content
+  {
+    margin-top: 2em;
+    padding-left: 2.8em;
+    padding-right: 2.8em;
+  }
+
+  .small-screen { display: none; }
+  .normal-screen { display: initial; }
+
+  .header-link {
+    font-size: 1.5em;
+    padding: 5px 25px 5px 25px;
+    text-decoration: none;
+  }
+}
+
+.tab {
+  padding-left: 2.2em;
 }
 
 @media(min-width: 470px)
@@ -103,8 +132,10 @@ h1 {
 @media(min-width: 625px)
 {
   html { font-size: 18px; }
+  h1 { font-size: 3em; }
 
   #header {
+    padding-top: 20px;
     flex-direction: row;
   }
  /* Full-width headings have been line-wrapped manually for a more balanced
@@ -125,10 +156,10 @@ h1 {
 
   /* If we are on a large-ish screen anyway, give the header some room to
    * breathe. */
-  header
+  #header
   {
     margin-top: 1.4em;
-    margin-bottom: 1.4em;
+    margin-bottom: 2em;
   }
 
   #content
