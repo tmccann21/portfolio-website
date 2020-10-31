@@ -1,0 +1,50 @@
+#navbar {
+    display: flex;
+    align-items: center;
+}
+
+.article-link, .article-link:focus, .article-link:active, .article-link:visited {
+    text-decoration: none;
+    color: #445566;
+    font-weight: 800;
+    font-size: 1.4em;
+}
+
+.article-link:hover {
+    color: #00a0a0;
+}
+
+.article-header {
+    padding-bottom: .6em;
+}
+
+.article-description {
+    font-size: 1.2em;
+    font-weight: 300;
+    color: #748ea8;
+}
+
+.article-row {
+    padding-bottom: 1em;
+}
+
+.article-date {
+    color: #748ea8;
+    margin-top: 0.3em;
+    font-size: 0.7em;
+}
+
+@media(min-width: 400px)
+{
+    .article-header {
+        padding-bottom: 0;
+    }
+
+    .article-row {
+        display: flex;
+        justify-content: left;
+        align-items: baseline;
+    }
+
+    .article-description { padding-left: .3em; }
+}
