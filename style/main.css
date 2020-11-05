@@ -5,19 +5,17 @@ body {
   border-top: 1em solid #00a0a0;
 }
 
+p, h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+}
+
 h1 {
   color: #000;
-  margin: 0;
 }
 
 h2 {
   color: #000;
-  margin: 0;
   font-size: 2.5em;
-}
-
-p {
-  margin: 0;
 }
 
 #content {
@@ -30,10 +28,7 @@ p {
 }
 
 #header {
-  display: flex;
-  align-items: center;
   max-width: 100vw;
-  flex-direction: column;
   margin-bottom: 2em;
 }
 
@@ -43,6 +38,22 @@ p {
 
 .header-link:hover {
   color: #00a0a0
+}
+
+.header-top {
+  display: flex;
+  align-items: flex-start;
+  flex-direction: column;
+}
+
+.fade-colour {
+  -moz-transition:color .15s ease-in;
+  -o-transition:color .15s ease-in;
+  -webkit-transition:color .15s ease-in;
+}
+
+.light-grey {
+  color: #748ea8;
 }
 
 @media(min-width: 330px)
@@ -69,8 +80,8 @@ p {
   .normal-screen { display: none; }
 
   .header-link {
-    font-size: 1.3em;
-    padding: 8px 10px 5px 10px;
+    font-size: 1.45em;
+    padding: 8px 20px 5px 0;
     text-decoration: none;
   }
 }
@@ -82,15 +93,15 @@ p {
   }
 
   .header-link {
-    font-size: 1.45em;
-    padding: 8px 16px 5px 16px;
+    font-size: 1.55em;
+    padding: 8px 32px 5px 0;
     text-decoration: none;
   }
 }
 
 @media(min-width: 400px) {
   h1 {
-    font-size: 2.7em
+    font-size: 2.68em
   }
 
   #content
@@ -101,8 +112,8 @@ p {
   }
 
   .header-link {
-    font-size: 1.5em;
-    padding: 5px 25px 5px 25px;
+    font-size: 1.8em;
+    padding: 5px 32px 5px 0;
     text-decoration: none;
   }
 }
@@ -121,6 +132,12 @@ p {
   {
     margin-left: 2.8em;
     margin-right: 2.8em;
+  }
+
+  .header-link {
+    font-size: 1.7em;
+    padding: 5px 40px 5px 0;
+    text-decoration: none;
   }
 }
 
@@ -143,16 +160,16 @@ p {
 
   #header {
     padding-top: 20px;
+  }
+
+  #navbar { align-items: initial; }
+
+  .header-top {
     flex-direction: row;
+    align-items: center;
   }
- /* Full-width headings have been line-wrapped manually for a more balanced
-  * result than what the browser would do. Even though at this size the line
-  * width is not yet 36em, titles that need breaking are typically much
-  * shorter per line, so this should fit. */
-  h1 > br
-  {
-    display: block;
-  }
+
+  .header-link { padding: 5px 25px 5px 25px; }
 }
 
 /* At this width, the viewport is wide enough to fit the content at its

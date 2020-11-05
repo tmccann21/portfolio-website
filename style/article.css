@@ -1,5 +1,5 @@
 .article-title {
-    padding-bottom: 1em;
+    padding-bottom: 2em;
 }
 
 .article-date {
@@ -10,4 +10,22 @@
 
 .article-content {
     font-size: 1.2em;
+}
+
+.home-link, .home-link:focus, .home-link:active, .home-link:visited {
+    text-decoration: none;
+    color: #445566;
+    font-size: .8em;
+}
+
+.home-link:hover {
+    color: #00a0a0;
+}
+
+@media(min-width: 802px) {
+    .article-content { font-size: 1em; }
+    .article-date {
+        font-size: .8em;
+        margin-top: 0.2em;
+    }
 }
