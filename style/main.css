@@ -93,7 +93,7 @@ h2 {
   }
 
   .small-screen { display: none; }
-  .normal-screen { display: initial; }
+  .normal-screen { display: revert; }
 }
 
 @media(min-width: 625px) {
@@ -110,7 +110,7 @@ h2 {
   }
 }
 
-@media(min-width: 802px) {
+@media(min-width: 800px) {
   html { font-size: 19px; }
 
   #content { margin-top: 3.5em; }

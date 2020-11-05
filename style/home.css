@@ -16,17 +16,17 @@
 }
 
 .article-header {
-    padding-bottom: .6em;
+    padding-bottom: .3em;
 }
 
 .article-description {
-    font-size: 1.2em;
+    font-size: 1em;
     font-weight: 300;
     color: #748ea8;
 }
 
 .article-row {
-    padding-bottom: 1em;
+    padding-bottom: 1.2em;
 }
 
 .article-date {
@@ -90,3 +90,8 @@
 }
 
 @media(min-width: 625px) { .navbar-link { padding: 5px 25px 5px 25px; } }
+
+@media(min-width: 800px) {
+    .article-link, .article-link:focus, .article-link:active, .article-link:visited { font-size: 1.25em }
+    .article-row { padding-bottom: 1.5em; }
+}
