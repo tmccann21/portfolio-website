@@ -32,14 +32,6 @@ h2 {
   margin-bottom: 2em;
 }
 
-.header-link:link, .header-link:visited, .header-link:active {
-  color: black;
-}
-
-.header-link:hover {
-  color: #00a0a0
-}
-
 .header-top {
   display: flex;
   align-items: flex-start;
@@ -56,12 +48,19 @@ h2 {
   color: #748ea8;
 }
 
-@media(min-width: 330px)
-{
+.tab {
+  padding-left: 2.2em;
+}
+
+@media(min-width: 330px) {
   html { font-size: 16px; }
 
-  h1 {
-    font-size: 2.05em
+  h1 { font-size: 2.05em; }
+
+  #content {
+    margin-top: 2em;
+    padding-left: 2.8em;
+    padding-right: 2.8em;
   }
 
   #header {
@@ -69,82 +68,26 @@ h2 {
     margin-bottom: 2em;
   }
 
-  #content
-  {
-    margin-top: 2em;
-    padding-left: 2.8em;
-    padding-right: 2.8em;
-  }
-
   .small-screen { display: initial; }
   .normal-screen { display: none; }
-
-  .header-link {
-    font-size: 1.45em;
-    padding: 8px 20px 5px 0;
-    text-decoration: none;
-  }
 }
 
-@media(min-width: 370px)
-{
-  h1 {
-    font-size: 2.4em
-  }
-
-  .header-link {
-    font-size: 1.55em;
-    padding: 8px 32px 5px 0;
-    text-decoration: none;
-  }
-}
+@media(min-width: 370px) { h1 { font-size: 2.4em; } }
 
 @media(min-width: 400px) {
-  h1 {
-    font-size: 2.68em
-  }
+  h1 { font-size: 2.68em; }
 
-  #content
-  {
+  #content {
     margin-top: 2em;
     padding-left: 2.8em;
     padding-right: 2.8em;
   }
-
-  .header-link {
-    font-size: 1.8em;
-    padding: 5px 32px 5px 0;
-    text-decoration: none;
-  }
 }
 
-.tab {
-  padding-left: 2.2em;
-}
+@media(min-width: 470px) { html { font-size: 17px; } }
 
-@media(min-width: 470px)
-{
-  html { font-size: 17px; }
-
-  /* Add some margin to the heading to make it line-wrap nicer. Smaller
-   * viewports get more room because the words might not fit otherwise. */
-  header
-  {
-    margin-left: 2.8em;
-    margin-right: 2.8em;
-  }
-
-  .header-link {
-    font-size: 1.7em;
-    padding: 5px 40px 5px 0;
-    text-decoration: none;
-  }
-}
-
-@media(min-width: 544px)
-{
-  #content
-  {
+@media(min-width: 544px) {
+  #content  {
     padding-left: 2.8em;
     padding-right: 2.8em;
   }
@@ -153,14 +96,11 @@ h2 {
   .normal-screen { display: initial; }
 }
 
-@media(min-width: 625px)
-{
+@media(min-width: 625px) {
   html { font-size: 18px; }
   h1 { font-size: 3em; }
 
-  #header {
-    padding-top: 20px;
-  }
+  #header { padding-top: 20px; }
 
   #navbar { align-items: initial; }
 
@@ -168,40 +108,21 @@ h2 {
     flex-direction: row;
     align-items: center;
   }
-
-  .header-link { padding: 5px 25px 5px 25px; }
 }
 
-/* At this width, the viewport is wide enough to fit the content at its
- * maximum width (36em). */
-@media(min-width: 802px)
-{
+@media(min-width: 802px) {
   html { font-size: 19px; }
 
-  /* If we are on a large-ish screen anyway, give the header some room to
-   * breathe. */
-  #header
-  {
+  #content { margin-top: 3.5em; }
+
+  #header {
     margin-top: 1.4em;
     margin-bottom: 2em;
   }
-
-  #content
-  {
-    margin-top: 3.5em;
-  }
 }
 
-@media(min-width: 1003px)
-{
-  html { font-size: 20px; }
-}
-
-@media(min-width: 1225px)
-{
-  html { font-size: 21px; }
-}
-
+@media(min-width: 1003px) { html { font-size: 20px; } }
+@media(min-width: 1225px) { html { font-size: 21px; } }
 @media(min-width: 1496px) { html { font-size: 22px; } }
 @media(min-width: 1736px) { html { font-size: 23px; } }
 @media(min-width: 2025px) { html { font-size: 24px; } }
