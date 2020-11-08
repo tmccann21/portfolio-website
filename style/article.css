@@ -15,7 +15,7 @@
 .home-link, .home-link:focus, .home-link:active, .home-link:visited {
     text-decoration: none;
     color: #445566;
-    font-size: .8em;
+    font-size: .75em;
 }
 
 .home-link:hover {
@@ -23,9 +23,10 @@
 }
 
 @media(min-width: 802px) {
-    .article-content { font-size: 1em; }
+    .article-content { font-size: .85em; }
     .article-date {
         font-size: .8em;
         margin-top: 0.2em;
     }
 }
+
