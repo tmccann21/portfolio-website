@@ -22,7 +22,6 @@
 .article-description {
     font-size: 1em;
     font-weight: 300;
-    color: #748ea8;
 }
 
 .article-row {
@@ -30,7 +29,6 @@
 }
 
 .article-date {
-    color: #748ea8;
     margin-top: 0.3em;
     font-size: 0.7em;
 }
