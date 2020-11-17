@@ -11,35 +11,25 @@
     font-size: 1.4em;
 }
 
-.article-link:hover {
-    color: #00a0a0;
-}
+.article-link:hover { color: #00a0a0; }
 
-.article-header {
-    padding-bottom: .3em;
-}
+.article-header { padding-bottom: .3em; }
 
 .article-description {
     font-size: 1em;
     font-weight: 300;
 }
 
-.article-row {
-    padding-bottom: 1.2em;
-}
+.article-row { padding-bottom: 1.2em; }
 
 .article-date {
     margin-top: 0.3em;
     font-size: 0.7em;
 }
 
-.navbar-link:link, .navbar-link:visited, .navbar-link:active {
-    color: black;
-}
+.navbar-link:link, .navbar-link:visited, .navbar-link:active { color: black; }
 
-.navbar-link:hover {
-    color: #00a0a0
-}
+.navbar-link:hover { color: #00a0a0; }
 
 @media(min-width: 330px) {
     .navbar-link {
@@ -67,16 +57,14 @@
 
 @media(min-width: 470px) {
     .navbar-link {
-        font-size: 1.7em;
+        font-size: 1.4em;
         padding: 5px 40px 5px 0;
         text-decoration: none;
     }
 }
 
 @media(min-width: 544px) {
-    .article-header {
-        padding-bottom: 0;
-    }
+    .article-header { padding-bottom: 0; }
 
     .article-row {
         display: flex;
@@ -87,7 +75,7 @@
     .article-description { padding-left: .3em; }
 }
 
-@media(min-width: 625px) { .navbar-link { padding: 5px 25px 5px 25px; } }
+@media(min-width: 625px) { .navbar-link { padding: 5px 20px 5px 20px; } }
 
 @media(min-width: 800px) {
     .article-link, .article-link:focus, .article-link:active, .article-link:visited { font-size: 1.25em }

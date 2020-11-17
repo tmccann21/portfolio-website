@@ -1,2 +1,3 @@
  https://trevormccann.com/
- https://trevormccann.com/articles/linear-programming.html
+ https://trevormccann.com/pages/resume.html
+ https://trevormccann.com/articles/sudoku.html
