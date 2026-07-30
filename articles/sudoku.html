@@ -6,7 +6,7 @@
         <meta name="author" content="Trevor McCann">
         <meta name="keywords" content="PuLP, Sudoku, Optimization, Linear Programming, Linear Programs, Python">
         <meta content="width=device-width, initial-scale=1" name="viewport" />
-        <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Lato:wght@100;300;400;600;700;800;900&display=swap" rel="stylesheet">
         <link rel="stylesheet" type="text/css" href="../style/main.css">
         <link rel="stylesheet" type="text/css" href="../style/article.css">
     </head>
@@ -27,7 +27,7 @@
                     <a href="https://en.wikipedia.org/wiki/Sudoku#Variants" class="external-link fade-colour" rel="noreferrer" target="_blank"> Common variations </a>
                     either change the size of the board, the shape of the the sub-regions (where
                     3x3 squares are normally used), or impose additional constraints on what values a cell can take.
-                    The particular puzzle which inspired this article is the 'Magic Square Sudoku' by
+                    The particular puzzle which inspired this article is the "Magic Square Sudoku" by
                     <a href="https://en.wikipedia.org/wiki/Sudoku#Variants" class="external-link fade-colour" rel="noreferrer" target="_blank"> Aad van de Wetering </a>
                     which adds a few interesting constraints to make an otherwise unsolvable puzzle, solvable.
                 </p>
@@ -50,7 +50,7 @@
                     states that the center 3x3 square is also a
                     <a href="https://en.wikipedia.org/wiki/Magic_square" class="external-link fade-colour" rel="noreferrer" target="_blank"> Magic Square</a>.
                     This means the values of it's rows, columns, and diagonals all sum to the same value.
-                    The final additional rule is known as an 'anti-knight' constraint, in reference to the movements
+                    The final additional rule is known as an "anti-knight" constraint, in reference to the movements
                     of the knight in chess. This rule states cells which are a knight's move apart cannot contain the
                     same value. In the example below, cells coloured yellow cannot also contain the value 4 due to
                     this constraint.
@@ -127,15 +127,15 @@
                     <span class="tab"/> Translating the knight's move constraint to a system of linear expressions is a
                     bit more challenging. Intuitively, it would be nice to use the same trick from our magic square
                     constraint to get the actual value of a cell, then compare it to that of the cells in the knight's
-                    move positions. Unfortunately, the idea of 'not equals' is harder to encode; it
+                    move positions. Unfortunately, the idea of "not equals" is harder to encode; it
                     <a href="https://math.stackexchange.com/a/1517850" class="external-link fade-colour" rel="noreferrer" target="_blank">can be done </a>
                     by introducing an additional boolean variable but there's an easier way to represent this constraint
                     for our specific problem.
                 </p>
                 <p class="article-paragraph">
-                    <span class="tab"/> Instead of trying to encode the idea that 'the value of cell A is not equal
-                    to the value of cell B', we can enforce that 'at most one of cell A or cell B can have value <span
-                    class="inline-code">X</span>'. For each cell, we iterate over every value and check that either
+                    <span class="tab"/> Instead of trying to encode the idea that "the value of cell A is not equal
+                    to the value of cell B", we can enforce that "at most one of cell A or cell B can have value <span
+                    class="inline-code">X</span>". For each cell, we iterate over every value and check that either
                     one or zero of those cells has that value set. This achieves the effect we want, but it comes at a
                     cost of adding 9 inequalities for every knights move of every cell on the board. In a theoretical
                     context this doesn't matter, but we'll see when we actually build a solver that this has a real
