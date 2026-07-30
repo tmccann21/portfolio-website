@@ -15,16 +15,23 @@
 .navbar-link:hover { color: #6236FF; }
 
 .bio {
-    margin: 26px 0 0;
-    font-size: 18px;
+    margin: 26px 0 13px 0;
+    font-size: 17.8px;
     line-height: 28px;
     letter-spacing: -0.2px;
     color: rgba(25, 4, 69, 0.6);
-    max-width: 52ch;
 }
 
+.bio a, .bio a:link, .bio a:visited, .bio a:active {
+    color: rgba(25, 4, 69, 0.7);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.bio a:hover { color: #6236FF; }
+
 .section-eyebrow {
-    margin: 52px 0 18px;
+    margin: 26px 0 18px;
     font-size: 12px;
     font-weight: 800;
     letter-spacing: 3px;
