@@ -177,6 +177,26 @@ a.code-description { text-decoration: none; }
 
 a.code-description:hover { color: #6236FF; }
 
+#navbar {
+  display: flex;
+  gap: 22px;
+  font-size: 16px;
+  letter-spacing: -0.17px;
+  padding-bottom: 4px;
+}
+
+.current-page {
+  font-weight: 900 !important;
+}
+
+.navbar-link, .navbar-link:link, .navbar-link:visited, .navbar-link:active {
+  color: rgba(25, 4, 69, 0.7);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.navbar-link:hover { color: #6236FF; }
+
 .header-top {
   display: flex;
   align-items: flex-end;

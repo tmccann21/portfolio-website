@@ -1,0 +1,62 @@
+#resume {
+  margin: 30px 0 0 0;
+}
+
+.resume-section {
+  display: grid;
+  grid-template-columns: 1fr 17%;
+  gap: 5px;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  margin: 10px 0 10px 0;
+
+  p {
+    font-size: 14px;
+    font-weight: 800;
+    background: linear-gradient(100deg, #12A594 0%, #3E6FF0 70%, #6236FF 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    width: fit-content;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+  }
+}
+
+.section-header .break {
+  flex-grow: 1;
+  height: 1px;
+  background-color: rgba(25, 4, 69, 0.1);
+}
+
+.resume-section {
+  .resume-experience-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #180045;
+  }
+
+  .resume-experience {
+    margin-bottom: 20px;
+  }
+
+  .resume-experience-company {
+    font-size: 18px;
+    font-weight: 400;
+    color: rgba(25, 4, 69, 0.4);
+  }
+
+  .resume-experience-meta {
+    text-align: right;
+  }
+
+  .resume-experience-skills {
+    margin-top: 10px;
+    font-size: 14px;
+    font-style: italic;
+    color: rgba(25, 4, 69, 0.4);
+  }
+}
