@@ -9,6 +9,9 @@
         <link href="https://fonts.googleapis.com/css2?family=Lato:wght@100;300;400;600;700;800;900&display=swap" rel="stylesheet">
         <link rel="stylesheet" type="text/css" href="../style/main.css">
         <link rel="stylesheet" type="text/css" href="../style/article.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+        <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+        <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
     </head>
     <body>
         <div id="content">
@@ -85,11 +88,13 @@
                     standard Sudoku rules:
                 </p>
                 <div class="image-centered">
-                    <img
-                        src="../resources/sudoku-linear-program.png"
-                        alt="Standard linear program for solving Sudoku"
-                        class="image-large"
-                    />
+                    $$\begin{aligned}
+                    \text{maximize} \quad & 0 \\
+                    \text{subject to} \quad & \sum_{v=1}^{9} X_{rcv} = 1 \quad \text{for } r, c \in [1, 9] \\
+                    & \sum_{r=1}^{9} X_{rcv} = 1 \quad \text{for } c, v \in [1, 9] \\
+                    & \sum_{c=1}^{9} X_{rcv} = 1 \quad \text{for } r, v \in [1, 9] \\
+                    & \sum_{r=3i-2}^{3i} \sum_{c=3j-2}^{3j} X_{rcv} = 1 \quad \text{for } v \in [1, 9] \text{ and } i, j \in [1, 3]
+                    \end{aligned}$$
                 </div>
                 <p class="article-paragraph">
                     <span class="tab"/> The first sum constrains each cell, indexed by it's row and column to take on
@@ -100,11 +105,10 @@
                     the values between 1 and 9 appears exactly once.
                 </p>
                 <div class="image-centered">
-                    <img
-                        src="../resources/sudoku-diagonal-constraints.png"
-                        alt="Linear inequalities expressing the diagonal values constraint"
-                        class="image-small"
-                    />
+                    $$\begin{aligned}
+                    & \sum_{v=1}^{9} X_{ddv} = 1 \quad \text{for } d \in [1, 9] \\
+                    & \sum_{v=1}^{9} X_{(10-d)\,d\,v} = 1 \quad \text{for } d \in [1, 9]
+                    \end{aligned}$$
                 </div>
                 <p class="article-paragraph">
                     <span class="tab"/>To pose the magic square constraint as a linear expression we need to
@@ -117,11 +121,12 @@
                     equals the same value.
                 </p>
                 <div class="image-centered">
-                    <img
-                        src="../resources/sudoku-magic-square.png"
-                        alt="Linear inequalities expressing the magic square constraint"
-                        class="image-medium"
-                    />
+                    $$\begin{aligned}
+                    & \Big(\sum_{r=4}^{6} \sum_{v=1}^{9} v \cdot X_{rcv}\Big) - M = 0 \quad \text{for } c \in [4, 6] \\
+                    & \Big(\sum_{c=4}^{6} \sum_{v=1}^{9} v \cdot X_{rcv}\Big) - M = 0 \quad \text{for } r \in [4, 6] \\
+                    & \Big(\sum_{d=4}^{6} \sum_{v=1}^{9} v \cdot X_{ddv}\Big) - M = 0 \\
+                    & \Big(\sum_{d=4}^{6} \sum_{v=1}^{9} v \cdot X_{(7-d)\,d\,v}\Big) - M = 0
+                    \end{aligned}$$
                 </div>
                 <p class="article-paragraph">
                     <span class="tab"/> Translating the knight's move constraint to a system of linear expressions is a
@@ -144,11 +149,12 @@
                     constraints in the model.
                 </p>
                 <div class="image-centered">
-                    <img
-                        src="../resources/sudoku-knights-constraints.png"
-                        alt="Linear inequalities expressing the knight's move constraints"
-                        class="image-small"
-                    />
+                    $$\begin{aligned}
+                    & X_{rcv} + X_{(r-2)(c-1)v} \leq 0 \quad \text{for } r, c, v \in [1, 9] \\
+                    & X_{rcv} + X_{(r-1)(c-2)v} \leq 0 \quad \text{for } r, c, v \in [1, 9] \\
+                    & \qquad\qquad\vdots \\
+                    & X_{rcv} + X_{(r+1)(c+2)v} \leq 0 \quad \text{for } r, c, v \in [1, 9]
+                    \end{aligned}$$
                 </div>
                 <h3> Solving the Puzzle </h3>
                 <p class="article-paragraph">
