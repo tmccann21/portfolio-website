@@ -1,0 +1,387 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <title> Weather </title>
+        <meta name="description" content="Training a calibrated weather model to predict weather distributions">
+        <meta name="author" content="Trevor McCann">
+        <meta name="keywords" content="">
+        <meta content="width=device-width, initial-scale=1" name="viewport" />
+        <link href="https://fonts.googleapis.com/css2?family=Lato:wght@100;300;400;600;700;800;900&display=swap" rel="stylesheet">
+        <link rel="stylesheet" type="text/css" href="../style/main.css">
+        <link rel="stylesheet" type="text/css" href="../style/article.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+        <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+        <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+    </head>
+    <body>
+        <div id="content">
+            <div class="article-title">
+                <h2>Weather</h2>
+                <a href="../index.html" class="home-link light-grey fade-colour">More Posts</a>
+            </div>
+            <div class="article-content">
+                <p class="article-paragraph">
+                    <span class="tab" />Earlier this year an Instagram reel about college kids scraping temperature readings from commercial airplanes
+                    to trade Polymarket weather contracts caught my attention. It doesn't work, for many reasons but not least because commercial airplanes
+                    tend to be in the air which is not a good proxy for the ground temperature. In any case, this led to a conversation over drinks with
+                    a friend about what it would actually take to beat the market.
+                    <br/><br/>
+                    <span class="tab" />
+                    For context, the condition of these particular contracts is predicting the daily high in 1°C increments. The contracts resolve
+                    based on the highest daily <a href="https://aviationweather.gov/data/metar/" class="external-link fade-colour" rel="noreferrer" target="_blank">METAR</a>
+                    reported by NOAA at a number of airports. For this project I selected 14 cities, primarily in Asia and Europe but mostly based on total trading
+                    volume. Most of the trading is focused on predicting the exact bin during the peak phase of the day; this segment competes on information quality,
+                    data access speed, and trade timing. The high-frequency, intra-day trading felt like a losing battle for a model that was going
+                    to run on a Macbook Air, so instead I shifted my focus to trying to predict in the lead-up to the market's target date. My
+                    goal became to model the temperature forecast as a calibrated distribution using freely available weather forecast data.
+                </p>
+                <h3>Predicting the Weather</h3>
+                <p class="article-paragraph">
+                    <span class="tab" />Most weather apps rely on government backed
+                    <a href="https://en.wikipedia.org/wiki/Numerical_weather_prediction" class="external-link fade-colour" rel="noreferrer" target="_blank">Numerical Weather Prediction (NWP)</a>
+                    models to predict the weather. These models segment the planet into a grid and solve the equations of fluid dynamics forward in
+                    time on supercomputers to predict the weather in each cell. The difference between a rough forecast and an accurate prediction comes from
+                    the post-processing step. The classic approach is known as
+                    <a href="https://vlab.noaa.gov/web/mdl/mos" class="external-link fade-colour" rel="noreferrer" target="_blank">Model Output Statistics (MOS)</a>.
+                    MOS fits a linear regression to the historical observations to map the model's output to a point forecast.
+                </p>
+                <p class="article-paragraph">
+                    <span class="tab" />Whereas weather apps only need to produce a single point forecast, trading on weather markets
+                    requires a full probability distribution - specifically, a CDF over temperatures discretized into 1°C bins.
+                    To get there, we use Ensemble Model Output Statistics (EMOS), which combines the outputs of multiple NWP models into a
+                    calibrated predictive distribution by learning a mean and variance from their forecasts. The foundation of the model
+                    was built on the following six models from ECMWF and NOAA:
+                </p>
+                <ul class="model-list">
+                    <li>
+                        <a href="https://www.ecmwf.int/en/forecasts/datasets/set-i" class="external-link fade-colour" rel="noreferrer" target="_blank">ECMWF IFS Deterministic</a>
+                        <br/><a href="https://data.ecmwf.int/forecasts/" class="external-link fade-colour" rel="noreferrer" target="_blank" style="font-size: 12px; color: rgba(25, 4, 69, 0.4);">via ECMWF Open Data</a>
+                    </li>
+                    <li>
+                        <a href="https://www.ecmwf.int/en/forecasts/datasets/set-ix" class="external-link fade-colour" rel="noreferrer" target="_blank">ECMWF AIFS Deterministic</a>
+                        <br/><a href="https://data.ecmwf.int/forecasts/" class="external-link fade-colour" rel="noreferrer" target="_blank" style="font-size: 12px; color: rgba(25, 4, 69, 0.4);">via ECMWF Open Data</a>
+                    </li>
+                    <li>
+                        <a href="https://www.ecmwf.int/en/forecasts/datasets/set-iii" class="external-link fade-colour" rel="noreferrer" target="_blank">ECMWF IFS Ensemble</a>
+                        <br/><a href="https://data.ecmwf.int/forecasts/" class="external-link fade-colour" rel="noreferrer" target="_blank" style="font-size: 12px; color: rgba(25, 4, 69, 0.4);">via ECMWF Open Data</a>
+                    </li>
+                    <li>
+                        <a href="https://www.ecmwf.int/en/forecasts/datasets/set-x" class="external-link fade-colour" rel="noreferrer" target="_blank">ECMWF AIFS Ensemble</a>
+                        <br/><a href="https://data.ecmwf.int/forecasts/" class="external-link fade-colour" rel="noreferrer" target="_blank" style="font-size: 12px; color: rgba(25, 4, 69, 0.4);">via ECMWF Open Data</a>
+                    </li>
+                    <li>
+                        <a href="https://www.emc.ncep.noaa.gov/emc/pages/numerical_forecast_systems/gfs.php" class="external-link fade-colour" rel="noreferrer" target="_blank">GFS Seamless</a>
+                        <br/><a href="https://data.dynamical.org" class="external-link fade-colour" rel="noreferrer" target="_blank" style="font-size: 12px; color: rgba(25, 4, 69, 0.4);">via dynamical.org</a>
+                    </li>
+                    <li>
+                        <a href="https://www.emc.ncep.noaa.gov/emc/pages/numerical_forecast_systems/gefs.php" class="external-link fade-colour" rel="noreferrer" target="_blank">GEFS Ensemble</a>
+                        <br/><a href="https://noaa-gefs-pds.s3.amazonaws.com/" class="external-link fade-colour" rel="noreferrer" target="_blank" style="font-size: 12px; color: rgba(25, 4, 69, 0.4);">via NOAA S3</a>
+                    </li>
+                </ul>
+                <p class="article-paragraph">
+                    After about three months of collecting daily predictions,
+                    <a href="https://www.dwd.de/EN/research/weatherforecasting/num_modelling/01_num_weather_prediction_modells/icon_description.html" class="external-link fade-colour" rel="noreferrer" target="_blank">ICON Seamless</a>
+                    (via <a href="https://open-meteo.com" class="external-link fade-colour" rel="noreferrer" target="_blank">Open-Meteo</a>)
+                    was added as a seventh predictor. Most of these sources offer ~2-6 weeks of previous forecasts depending on where you query them,
+                    and in my findings it took about two months of data to get a stable contribution to a short term EMOS prediction.
+                </p>
+                <p class="article-paragraph">
+                    <span class="tab" />As the names suggest, these models fall into one of two categories: deterministic or ensemble.
+                    Deterministic models give you one prediction; ensemble models run the simulation many times with slightly perturbed
+                    initializations to see how much the answer varies. ECMWF ensemble models each have 51 members and GEFS has 31.
+                    Intuitively, when ensemble members disagree more it suggests that the forecast is genuinely more uncertain. Generally
+                    NWP models produced by governments will be optimized to forecast locally; you can usually find specific models that
+                    offer higher resolution predictions in limited regions like those offered by Japan's
+                    <a href="https://www.jma.go.jp/jma/en/Activities/nwp.html" class="external-link fade-colour" rel="noreferrer" target="_blank">JMA</a>
+                    or Canada's
+                    <a href="https://weather.gc.ca/model_forecast/global_e.html" class="external-link fade-colour" rel="noreferrer" target="_blank">ECCC</a>.
+                    The models I opted for are all global and generally perform well world-wide, but each has their strengths and weaknesses.
+                </p>
+                <p class="article-paragraph">
+                    <span class="tab" />With these models as inputs, we try to learn a predictive distribution. My initial approach used a Gaussian
+                    distribution but after testing with a Logistic and Student-t distribution I found Student-t produced the best results. The Logistic
+                    distribution tended to overestimate the probability of the most likely bin, and the Gaussian distribution was too light on the tails.
+                    The heavier (and tunable) tails of Student-t captured the frequency of outliers best in the end. The model learns an appropriate number
+                    of degrees of freedom, but it's generally settled around 5.6 to produce the best forecasts.
+                </p>
+                <div class="image-centered">
+                    $$\mu = a_0 + \sum_{m=1}^{M} b_m \, f_m + \delta_s \qquad\qquad \sigma^2 = c + d_1 \, S^2_{\text{between}} + d_2 \, S^2_{\text{ens}}$$
+                </div>
+                <p class="article-paragraph">
+                    <span class="tab" />The mean is calculated as a blend of each model's forecast, \(b_m\) controls how much weight model \(m\) gets,
+                    and \(\delta_s\) is a per-station bias correction. One of the biggest improvements the model saw was statically debiasing
+                    \(f_m\) when I was able to find large datasets of past forecasts for a given model (GFS, GEFS, AIFS and IFS were all possible). The
+                    bias parameter blends historical data over a 15 day window centered on the target date to capture and account for any seasonal biases
+                    within the model.
+                    The variance is a function of two spread signals: how much the NWP models disagree with each other, and how much each ensemble's own
+                    members disagree internally. This lets the model widen its distribution when forecasts are uncertain and tighten it when they agree.
+                </p>
+                <h3>Scoring & Calibration</h3>
+                <p class="article-paragraph">
+                    <span class="tab" />All parameters are learned by minimizing the Continuous Ranked Probability Score (CRPS). CRPS measures how well
+                    a predicted CDF matches the observed outcome; it can be thought of as the error of our model's CDF for a given forecast. If you
+                    imagine the pricing across bins as a CDF for the markets prediction, a lower CRPS would imply our forecast is better calibrated than
+                    the market's. For a predicted CDF \(F\) and observed value \(y\), CRPS is defined as<sup><a href="#ref-1">[1]</a></sup>:
+                </p>
+                <div class="image-centered">
+                    $$\text{CRPS}(F, y) = \int_{-\infty}^{\infty} \left[ F(x) - \mathbb{1}(x \geq y) \right]^2 \, dx$$
+                </div>
+                <p class="article-paragraph">
+                    <span class="tab" />CRPS defines a step function that steps at the observed value \(y\), and measures the
+                    area of the squared difference between it and the predicted CDF. For the Student-t distribution, CRPS has a closed-form expression
+that avoids numerical integration<sup><a href="#ref-2">[2]</a></sup>. The result combines three terms:
+                </p>
+                <div class="code-block">
+<pre>
+def crps_student_t(mu, sigma, nu, y):
+    z = (y - mu) / sigma  # standardize observation
+    pdf_z = t.pdf(z, nu)
+    cdf_z = t.cdf(z, nu)
+    beta_ratio = (
+        beta_func(0.5, nu - 0.5)
+        / (beta_func(0.5, 0.5 * nu) ** 2)
+    )
+    return sigma * (
+        z * (2 * cdf_z - 1)                        # displacement from center
+        + 2 * pdf_z * (nu + z**2) / (nu - 1)       # spread penalty
+        - 2 * np.sqrt(nu) * beta_ratio / (nu - 1)  # tail weight baseline
+    )
+</pre>
+                </div>
+                <p class="article-paragraph">
+                    <span class="tab" />A model that minimizes CRPS will tend to produce better-calibrated forecasts.
+                    The simplest way to frame calibration is to ask, "if the model predicts an outcome 30% likelihood,
+                    how often does it actually occur?" With a perfectly calibrated model, 30% of the time.
+                    A useful diagnostic tool is the
+                    <a href="https://en.wikipedia.org/wiki/Probability_integral_transform" class="external-link fade-colour" rel="noreferrer" target="_blank">Probability Integral Transform (PIT) histogram.</a>
+                    For each forecast, evaluate the CDF at the observed outcome \(F(\hat{y})\).
+                    If the model is calibrated these PIT values will be uniformly distributed.
+                </p>
+                <p class="article-paragraph">
+                    <span class="tab" />The PIT histogram ultimately informed the distribution choice. Gaussian
+                    produced a U-shaped PIT histogram - implying too much probability was left in the tails. Logistic improved tail coverage
+                    but overconcentrated around the peak bin - meaning the outcomes were underdispersed. Student-t's tunable \(\nu\)
+                    let the model learn the correct degrees of freedom to smooth the PIT histogram.
+                </p>
+                <div class="image-centered">
+                    $$\mathcal{L} = \sum_{i=1}^{N} w_i \cdot \text{CRPS}(\mu_i, \sigma_i, \nu, y_i)$$
+                </div>
+                <p class="article-paragraph">
+                    <span class="tab" />The model is fit hierarchically in three stages: first, global parameters are learned across all stations
+                    and lead times (L0). Next, variance parameters are learned at several lead times (L1). Finally, the per-station intercepts are
+                    fitted to capture any remaining biases (L2). Each level is validated via leave-one-out cross-validation before being adopted.
+                    The optimizer is scipy's implementation of
+                    <a href="https://en.wikipedia.org/wiki/Limited-memory_BFGS" class="external-link fade-colour" rel="noreferrer" target="_blank">L-BFGS</a>
+                    which does well with smooth, low-dimensional problems like this.
+                </p>
+                <p class="article-paragraph">
+                    <span class="tab" />CRPS is not easily interpretable in terms of exact prediction error, but is useful for comparison
+                    between models. The following are a sample of training CRPS values achieved by the best model, an equal-weight mixture
+                    of the seven predictors, and a model consisting of a single ensemble model (GEFS). CRPS values are split by lead-time to
+                    forecast date
+                </p>
+                <table style="margin: 1.5em auto; border-collapse: collapse; font-size: 14px; color: rgba(25, 4, 69, 0.8);">
+                    <thead>
+                        <tr style="border-bottom: 2px solid rgba(25, 4, 69, 0.1);">
+                            <th style="padding: 6px 16px; text-align: left; font-weight: 600;"></th>
+                            <th style="padding: 6px 16px; text-align: right; font-weight: 600;"><48hr</th>
+                            <th style="padding: 6px 16px; text-align: right; font-weight: 600;">>48hr</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="border-bottom: 1px solid rgba(25, 4, 69, 0.06);">
+                            <td style="padding: 6px 16px; font-weight: 600;">Best</td>
+                            <td style="padding: 6px 16px; text-align: right;">0.639</td>
+                            <td style="padding: 6px 16px; text-align: right;">0.791</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid rgba(25, 4, 69, 0.06);">
+                            <td style="padding: 6px 16px; font-weight: 600;">Equal</td>
+                            <td style="padding: 6px 16px; text-align: right;">0.738</td>
+                            <td style="padding: 6px 16px; text-align: right;">0.863</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid rgba(25, 4, 69, 0.06);">
+                            <td style="padding: 6px 16px; font-weight: 600;">GEFS</td>
+                            <td style="padding: 6px 16px; text-align: right;">1.284</td>
+                            <td style="padding: 6px 16px; text-align: right;">1.698</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p class="article-paragraph">
+                    <span class="tab" />For posterity, these are the CRPS numbers using a test set of a 14-day window after the model
+                    was trained. The EMOS with learned weights performs much better on real data suggesting some overfitting in the
+                    equal weights model - likely extreme station intercept values.
+                </p>
+                <table style="margin: 1.5em auto; border-collapse: collapse; font-size: 14px; color: rgba(25, 4, 69, 0.8);">
+                    <thead>
+                        <tr style="border-bottom: 2px solid rgba(25, 4, 69, 0.1);">
+                            <th style="padding: 6px 16px; text-align: left; font-weight: 600;"></th>
+                            <th style="padding: 6px 16px; text-align: right; font-weight: 600;"><48hr</th>
+                            <th style="padding: 6px 16px; text-align: right; font-weight: 600;">>48hr</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="border-bottom: 1px solid rgba(25, 4, 69, 0.06);">
+                            <td style="padding: 6px 16px; font-weight: 600;">Best</td>
+                            <td style="padding: 6px 16px; text-align: right;">0.678</td>
+                            <td style="padding: 6px 16px; text-align: right;">0.902</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid rgba(25, 4, 69, 0.06);">
+                            <td style="padding: 6px 16px; font-weight: 600;">Equal</td>
+                            <td style="padding: 6px 16px; text-align: right;">0.883</td>
+                            <td style="padding: 6px 16px; text-align: right;">1.227</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <h3>Results</h3>
+                <p class="article-paragraph">
+                    <span class="tab" />CRPS is great for measuring calibration, but the question was whether or not this
+                    model could beat the market. The answer is - kind of. To evaluate model vs. market we look to the
+                    <a href="https://en.wikipedia.org/wiki/Brier_score" class="external-link fade-colour" rel="noreferrer" target="_blank">Brier Score</a>.
+                    Brier Score measures the accuracy of probabilistic predictions. For all bins over a given time period (technically,
+                    we filter to bins with >5% likelihood since a large number of bins receive 0% weight it skews the numbers) we compute
+                    the squared error of our predicted likelihood of an event vs. whether it actually occurred or not. We can repeat this
+                    for the market's predicted likelihood (the price of the option) and compare these two numbers directly. If our number is
+                    smaller, we have a tradable edge.
+                </p>
+                <p class="article-paragraph">
+                    <span class="tab" />Of the 14 cities selected for this project, the results were generally on-par with the market.
+                    Seasonal and dynamic weather would lead to the model outperforming some weeks and underperforming the next. Through it all,
+                    there were a few standout stations worth flagging.
+                </p>
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px 32px; margin-top: 1.5em; max-width: 500px; margin-left: auto; margin-right: auto;">
+                    <!-- Seoul: T-24h model .143 market .148, T-12h model .145 market .160 -->
+                    <svg viewBox="0 0 160 170" style="width: 100%; font-family: 'Lato', sans-serif;">
+                        <text x="80" y="15" text-anchor="middle" font-size="12" font-weight="600" fill="rgba(25, 4, 69, 0.8)">Seoul</text>
+                        <!-- T-24h pair -->
+                        <rect x="18" y="47" width="18" height="83" rx="3" fill="#12A594"/>
+                        <text x="27" y="44" text-anchor="middle" font-size="8" fill="rgba(25, 4, 69, 0.45)">.143</text>
+                        <rect x="38" y="44" width="18" height="86" rx="3" fill="#3E6FF0"/>
+                        <text x="47" y="41" text-anchor="middle" font-size="8" fill="rgba(25, 4, 69, 0.45)">.148</text>
+                        <!-- T-12h pair -->
+                        <rect x="84" y="46" width="18" height="84" rx="3" fill="#12A594"/>
+                        <text x="93" y="43" text-anchor="middle" font-size="8" fill="rgba(25, 4, 69, 0.45)">.145</text>
+                        <rect x="104" y="37" width="18" height="93" rx="3" fill="#3E6FF0"/>
+                        <text x="113" y="34" text-anchor="middle" font-size="8" fill="rgba(25, 4, 69, 0.45)">.160</text>
+                        <!-- Baseline -->
+                        <line x1="12" y1="130" x2="128" y2="130" stroke="rgba(25, 4, 69, 0.1)" stroke-width="1"/>
+                        <text x="37" y="144" text-anchor="middle" font-size="9" fill="rgba(25, 4, 69, 0.35)">T-24h</text>
+                        <text x="103" y="144" text-anchor="middle" font-size="9" fill="rgba(25, 4, 69, 0.35)">T-12h</text>
+                    </svg>
+                    <!-- Tokyo: T-24h model .141 market .148, T-12h model .154 market .159 -->
+                    <svg viewBox="0 0 160 170" style="width: 100%; font-family: 'Lato', sans-serif;">
+                        <text x="80" y="15" text-anchor="middle" font-size="12" font-weight="600" fill="rgba(25, 4, 69, 0.8)">Tokyo</text>
+                        <!-- T-24h pair -->
+                        <rect x="18" y="48" width="18" height="82" rx="3" fill="#12A594"/>
+                        <text x="27" y="45" text-anchor="middle" font-size="8" fill="rgba(25, 4, 69, 0.45)">.141</text>
+                        <rect x="38" y="44" width="18" height="86" rx="3" fill="#3E6FF0"/>
+                        <text x="47" y="41" text-anchor="middle" font-size="8" fill="rgba(25, 4, 69, 0.45)">.148</text>
+                        <!-- T-12h pair -->
+                        <rect x="84" y="40" width="18" height="90" rx="3" fill="#12A594"/>
+                        <text x="93" y="37" text-anchor="middle" font-size="8" fill="rgba(25, 4, 69, 0.45)">.154</text>
+                        <rect x="104" y="37" width="18" height="93" rx="3" fill="#3E6FF0"/>
+                        <text x="113" y="34" text-anchor="middle" font-size="8" fill="rgba(25, 4, 69, 0.45)">.159</text>
+                        <!-- Baseline -->
+                        <line x1="12" y1="130" x2="128" y2="130" stroke="rgba(25, 4, 69, 0.1)" stroke-width="1"/>
+                        <text x="37" y="144" text-anchor="middle" font-size="9" fill="rgba(25, 4, 69, 0.35)">T-24h</text>
+                        <text x="103" y="144" text-anchor="middle" font-size="9" fill="rgba(25, 4, 69, 0.35)">T-12h</text>
+                    </svg>
+                </div>
+                <div style="display: flex; align-items: center; gap: 16px; font-size: 12px; color: rgba(25, 4, 69, 0.5); margin-top: 12px; justify-content: center;">
+                    <span style="display: flex; align-items: center; gap: 5px;"><span style="display: inline-block; width: 10px; height: 10px; border-radius: 2px; background: #12A594;"></span>Model</span>
+                    <span style="display: flex; align-items: center; gap: 5px;"><span style="display: inline-block; width: 10px; height: 10px; border-radius: 2px; background: #3E6FF0;"></span>Market</span>
+                    <span>Lower is better</span>
+                </div>
+                    <p class="article-paragraph">
+                        <span class="tab" />Starting with the strongest performers, Seoul and Tokyo. With Brier scores consistently lower
+                        than the market across several months it's safe to say the model has an edge over the market at these stations.
+                        It's hard to say exactly where the edge comes from, but my running hypothesis has been that during the summer months
+                        turbulent afternoon weather was modeled well by the physical simulations and traders relying on point forecasts were
+                        blind to the possible variance in the actual outcome.
+                    </p>
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px 32px; margin-top: 1.5em; max-width: 500px; margin-left: auto; margin-right: auto;">
+
+                    <!-- London: T-24h model .126 market .129, T-12h model .126 market .129 -->
+                    <svg viewBox="0 0 160 170" style="width: 100%; font-family: 'Lato', sans-serif;">
+                        <text x="80" y="15" text-anchor="middle" font-size="12" font-weight="600" fill="rgba(25, 4, 69, 0.8)">London</text>
+                        <!-- T-24h pair -->
+                        <rect x="18" y="57" width="18" height="73" rx="3" fill="#12A594"/>
+                        <text x="27" y="54" text-anchor="middle" font-size="8" fill="rgba(25, 4, 69, 0.45)">.126</text>
+                        <rect x="38" y="55" width="18" height="75" rx="3" fill="#3E6FF0"/>
+                        <text x="47" y="52" text-anchor="middle" font-size="8" fill="rgba(25, 4, 69, 0.45)">.129</text>
+                        <!-- T-12h pair -->
+                        <rect x="84" y="57" width="18" height="73" rx="3" fill="#12A594"/>
+                        <text x="93" y="54" text-anchor="middle" font-size="8" fill="rgba(25, 4, 69, 0.45)">.126</text>
+                        <rect x="104" y="55" width="18" height="75" rx="3" fill="#3E6FF0"/>
+                        <text x="113" y="52" text-anchor="middle" font-size="8" fill="rgba(25, 4, 69, 0.45)">.129</text>
+                        <!-- Baseline -->
+                        <line x1="12" y1="130" x2="128" y2="130" stroke="rgba(25, 4, 69, 0.1)" stroke-width="1"/>
+                        <text x="37" y="144" text-anchor="middle" font-size="9" fill="rgba(25, 4, 69, 0.35)">T-24h</text>
+                        <text x="103" y="144" text-anchor="middle" font-size="9" fill="rgba(25, 4, 69, 0.35)">T-12h</text>
+                    </svg>
+                    <!-- Madrid: T-24h model .140 market .126, T-12h model .124 market .108 -->
+                    <svg viewBox="0 0 160 170" style="width: 100%; font-family: 'Lato', sans-serif;">
+                        <text x="80" y="15" text-anchor="middle" font-size="12" font-weight="600" fill="rgba(25, 4, 69, 0.8)">Madrid</text>
+                        <!-- T-24h pair -->
+                        <rect x="18" y="49" width="18" height="81" rx="3" fill="#12A594"/>
+                        <text x="27" y="46" text-anchor="middle" font-size="8" fill="rgba(25, 4, 69, 0.45)">.140</text>
+                        <rect x="38" y="57" width="18" height="73" rx="3" fill="#3E6FF0"/>
+                        <text x="47" y="54" text-anchor="middle" font-size="8" fill="rgba(25, 4, 69, 0.45)">.126</text>
+                        <!-- T-12h pair -->
+                        <rect x="84" y="58" width="18" height="72" rx="3" fill="#12A594"/>
+                        <text x="93" y="55" text-anchor="middle" font-size="8" fill="rgba(25, 4, 69, 0.45)">.124</text>
+                        <rect x="104" y="68" width="18" height="62" rx="3" fill="#3E6FF0"/>
+                        <text x="113" y="65" text-anchor="middle" font-size="8" fill="rgba(25, 4, 69, 0.45)">.108</text>
+                        <!-- Baseline -->
+                        <line x1="12" y1="130" x2="128" y2="130" stroke="rgba(25, 4, 69, 0.1)" stroke-width="1"/>
+                        <text x="37" y="144" text-anchor="middle" font-size="9" fill="rgba(25, 4, 69, 0.35)">T-24h</text>
+                        <text x="103" y="144" text-anchor="middle" font-size="9" fill="rgba(25, 4, 69, 0.35)">T-12h</text>
+                    </svg>
+                </div>
+                <div style="display: flex; align-items: center; gap: 16px; font-size: 12px; color: rgba(25, 4, 69, 0.5); margin-top: 12px; justify-content: center;">
+                    <span style="display: flex; align-items: center; gap: 5px;"><span style="display: inline-block; width: 10px; height: 10px; border-radius: 2px; background: #12A594;"></span>Model</span>
+                    <span style="display: flex; align-items: center; gap: 5px;"><span style="display: inline-block; width: 10px; height: 10px; border-radius: 2px; background: #3E6FF0;"></span>Market</span>
+                    <span>Lower is better</span>
+                </div>
+                <p class="article-paragraph">
+                    <span class="tab" />And two weaker performers. In London's case, some weeks the forecasting was dead on and other weeks
+                    off by multiple degrees. I haven't been able to nail down the source of this but my goal is to roll in additional predictors
+                    from the UK's MET office that may have better modeling for the UK's climate. In Madrid, the market often predicts the peak
+                    temperature with >40% likelihood, on average higher than any other station. It's likely that stable weather patterns over the
+                    Spanish plateau make it generally easier to forecast for the city. My model on the other hand is not so locally tuned and
+                    is punished for letting the variance get so low, often assigning too much weight to the tail bins of this city.
+                </p>
+                <br>
+                <h3>Will it Trade?</h3>
+                <p class="article-paragraph">
+                    <span class="tab" /> I ended up giving the bot $100 and setting it loose to see what would happen. The short version: after
+                    about a month of ups and downs it busted. I learned a great deal about algorithmic trading and why a +EV doesn't necessarily
+                    equate to +money, but I'll save that for a future article. For now, I'll keep running my data scraper and hopefully seeing
+                    those calibration improve.
+                </p>
+                <br/>
+                <div class="references">
+                    <h3>References</h3>
+                    <ol class="reference-list">
+                        <li id="ref-1">
+                            Gneiting, T., Raftery, A. E., Westveld, A. H., & Goldman, T. (2005). Calibrated
+                probabilistic forecasting using ensemble model output statistics and minimum CRPS estimation.
+                            <span class="italics">Monthly Weather Review, 133</span>(5), 1098–1118.
+                            <a href="https://doi.org/10.1175/MWR2904.1" class="external-link fade-colour"
+                rel="noreferrer" target="_blank">doi:10.1175/MWR2904.1</a>
+                        </li>
+                        <li id="ref-2">
+                            Jordan, A., Krüger, F., & Lerch, S. (2019). Evaluating probabilistic forecasts
+                with scoringRules.
+                            <span class="italics">Journal of Statistical Software, 90</span>(12), 1–37.
+                            <a href="https://doi.org/10.18637/jss.v090.i12" class="external-link fade-colour"
+                rel="noreferrer" target="_blank">doi:10.18637/jss.v090.i12</a>
+                        </li>
+                    </ol>
+                </div>
+                <p class="article-paragraph">
+                    <a class="footer-link fade-colour" href="../index.html">Trevor McCann </a>
+                </p>
+            </div>
+        </div>
+    </body>
+</html>
