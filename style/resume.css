@@ -61,4 +61,8 @@
     font-style: italic;
     color: rgba(25, 4, 69, 0.4);
   }
+
+  .resume-experience-header {
+    margin-bottom: 10px;
+  }
 }
