@@ -1,29 +1,62 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <title> Trevor McCann / Software Engineer </title>
-    <meta name="description" content="Trevor McCann, Software Engineer. A blog about myself and the things I learn">
+    <title>Trevor McCann - Product Engineer</title>
+    <meta name="description" content="Personal website and blog of Trevor McCann; a collection of projects, ideas, and anything else">
     <meta name="author" content="Trevor McCann">
-    <meta name="keywords" content="Trevor McCann, Software Engineer, Programming">
+    <meta name="keywords" content="Trevor McCann, Software Engineer, Product Engineer, Vancouver, Programming">
     <meta content="width=device-width, initial-scale=1" name="viewport" />
+    <link rel="canonical" href="https://trevormccann.com/" />
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="Trevor McCann | Product Engineer" />
+    <meta property="og:description" content="Personal website and blog of Trevor McCann; a collection of projects, ideas, and anything else" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://trevormccann.com/" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Trevor McCann | Product Engineer" />
+    <meta name="twitter:description" content="Personal website and blog of Trevor McCann; a collection of projects, ideas, and anything else" />
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "Trevor McCann",
+      "url": "https://trevormccann.com/",
+      "author": {
+        "@type": "Person",
+        "name": "Trevor McCann",
+        "url": "https://trevormccann.com/",
+        "sameAs": [
+          "https://github.com/tmccann21",
+          "https://www.linkedin.com/in/tmccann21/"
+        ]
+      }
+    }
+    </script>
+
     <link href="https://fonts.googleapis.com/css2?family=Lato:wght@100;300;400;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="style/main.css">
     <link rel="stylesheet" type="text/css" href="style/home.css">
   </head>
   <body>
     <div id="content">
-      <div id="header">
+      <header id="header">
         <div class="header-top">
           <h1>Trevor McCann</h1>
-          <div id="navbar">
+          <nav id="navbar">
             <a href="./index.html" class="navbar-link fade-colour current-page">blog</a>
             <a href="./pages/resume.html" class="navbar-link fade-colour">resume</a>
             <a href="https://github.com/tmccann21" class="navbar-link fade-colour" rel="noreferrer" target="_blank">github</a>
             <a href="https://www.linkedin.com/in/tmccann21/" class="navbar-link fade-colour" rel="noreferrer" target="_blank">linkedin</a>
             <a href="mailto:trevormccann21@gmail.com" class="navbar-link fade-colour" rel="noreferrer" target="_blank">email</a>
-          </div>
+          </nav>
         </div>
-      </div>
+      </header>
+      <main>
       <p class="bio">I was 10 years old when I wrote my first lines of code. Since then programming has become a passion that's
         taken me through a Computer Science degree and into the world of startup software development. These days I enjoy walking
         the line between product and engineering. I'm currently helping thousands of job seekers get interviews at
@@ -42,6 +75,7 @@
           </a>
         </li>
       </ul>
+      </main>
     </div>
     <footer id="footer">Trevor McCann</footer>
   </body>

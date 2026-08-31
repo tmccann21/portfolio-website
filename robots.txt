@@ -1,3 +1,3 @@
 User-agent: *
 Allow: /
-Sitemap: https://trevormccann.com/sitemap.txt
+Sitemap: https://trevormccann.com/sitemap.xml

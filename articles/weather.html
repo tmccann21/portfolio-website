@@ -1,11 +1,40 @@
 <!doctype html>
 <html lang="en">
     <head>
-        <title> Weather </title>
-        <meta name="description" content="Training a calibrated weather model to predict weather distributions">
+        <title>Weather: Predicting The Future | Trevor McCann</title>
+        <meta name="description" content="Building a calibrated EMOS weather model to predict temperature distributions and trade Polymarket weather contracts.">
         <meta name="author" content="Trevor McCann">
-        <meta name="keywords" content="Prediction Markets, NWP, Weather, Python, Statistics, Trading, Algo-trading, Quant">
+        <meta name="keywords" content="Prediction Markets, NWP, Weather, Python, Statistics, Trading, Algo-trading, Quant, EMOS, ECMWF, CRPS, Polymarket">
         <meta content="width=device-width, initial-scale=1" name="viewport" />
+        <link rel="canonical" href="https://trevormccann.com/articles/weather.html" />
+
+        <!-- Open Graph -->
+        <meta property="og:title" content="Weather: Predicting The Future" />
+        <meta property="og:description" content="Building a calibrated EMOS weather model to predict temperature distributions and trade Polymarket weather contracts." />
+        <meta property="og:type" content="article" />
+        <meta property="og:url" content="https://trevormccann.com/articles/weather.html" />
+
+        <!-- Twitter Card -->
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:title" content="Weather: Predicting The Future" />
+        <meta name="twitter:description" content="Building a calibrated EMOS weather model to predict temperature distributions and trade Polymarket weather contracts." />
+
+        <!-- Structured Data -->
+        <script type="application/ld+json">
+        {
+          "@context": "https://schema.org",
+          "@type": "Article",
+          "headline": "Weather: Predicting The Future",
+          "description": "Building a calibrated EMOS weather model to predict temperature distributions and trade Polymarket weather contracts.",
+          "url": "https://trevormccann.com/articles/weather.html",
+          "author": {
+            "@type": "Person",
+            "name": "Trevor McCann",
+            "url": "https://trevormccann.com/"
+          }
+        }
+        </script>
+
         <link href="https://fonts.googleapis.com/css2?family=Lato:wght@100;300;400;600;700;800;900&display=swap" rel="stylesheet">
         <link rel="stylesheet" type="text/css" href="../style/main.css">
         <link rel="stylesheet" type="text/css" href="../style/article.css">
@@ -15,6 +44,7 @@
     </head>
     <body>
         <div id="content">
+            <article>
             <div class="article-title">
                 <h2>Weather</h2>
                 <a href="../index.html" class="home-link light-grey fade-colour">More Posts</a>
@@ -382,6 +412,7 @@ def crps_student_t(mu, sigma, nu, y):
                     <a class="footer-link fade-colour" href="../index.html">Trevor McCann </a>
                 </p>
             </div>
+            </article>
         </div>
     </body>
 </html>
