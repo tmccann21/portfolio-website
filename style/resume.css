@@ -65,4 +65,38 @@
   .resume-experience-header {
     margin-bottom: 10px;
   }
+
+  .resume-experience-two-col {
+    grid-column: 1 / -1;
+    margin-bottom: 20px;
+  }
+
+  .resume-experience-two-col {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+  }
+
+  .resume-experience-two-col p {
+    flex: 4;
+  }
+
+  .resume-experience-photo {
+    flex: 6;
+    min-width: 0;
+    max-width: 60%;
+    border-radius: 6px;
+    object-fit: cover;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  }
+}
+
+@media(max-width: 539px) {
+  .resume-section .resume-experience-two-col {
+    flex-direction: column;
+  }
+
+  .resume-section .resume-experience-photo {
+    width: 100%;
+  }
 }
