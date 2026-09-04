@@ -39,6 +39,7 @@
   border-bottom: 1px solid #e6e1d8;
 }
 
+.resume-entry:last-child,
 .resume-entry-simple {
   border-bottom: none;
 }
