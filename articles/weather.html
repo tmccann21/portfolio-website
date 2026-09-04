@@ -40,7 +40,8 @@
         }
         </script>
 
-        <link href="https://fonts.googleapis.com/css2?family=Lato:wght@100;300;400;600;700;800;900&display=swap" rel="stylesheet">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
         <link rel="stylesheet" type="text/css" href="../style/main.css">
         <link rel="stylesheet" type="text/css" href="../style/article.css">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
@@ -50,10 +51,15 @@
     <body>
         <div id="content">
             <article>
-            <div class="article-title">
-                <h2>Weather</h2>
-                <a href="../index.html" class="home-link light-grey fade-colour">More Posts</a>
+            <div class="article-header">
+                <a href="../index.html" class="article-header-name">Trevor McCann</a>
+                <a href="../index.html" class="article-header-back">← More posts</a>
             </div>
+            <div class="article-title">
+                <h1>Weather</h1>
+            </div>
+            <div class="article-subtitle">Predicting the future <span class="separator">·</span> <span class="date">2026</span></div>
+            <div class="article-divider"></div>
             <div class="article-content">
                 <p class="article-paragraph">
                     <span class="tab" />Earlier this year an Instagram reel about college kids scraping temperature readings from commercial airplanes
@@ -90,27 +96,27 @@
                 <ul class="model-list">
                     <li>
                         <a href="https://www.ecmwf.int/en/forecasts/datasets/set-i" class="external-link fade-colour" rel="noreferrer" target="_blank">ECMWF IFS Deterministic</a>
-                        <br/><a href="https://data.ecmwf.int/forecasts/" class="external-link fade-colour" rel="noreferrer" target="_blank" style="font-size: 12px; color: rgba(25, 4, 69, 0.4);">via ECMWF Open Data</a>
+                        <br/><a href="https://data.ecmwf.int/forecasts/" class="external-link fade-colour" rel="noreferrer" target="_blank" style="font-size: 12px; color: #6f6a62;">via ECMWF Open Data</a>
                     </li>
                     <li>
                         <a href="https://www.ecmwf.int/en/forecasts/datasets/set-ix" class="external-link fade-colour" rel="noreferrer" target="_blank">ECMWF AIFS Deterministic</a>
-                        <br/><a href="https://data.ecmwf.int/forecasts/" class="external-link fade-colour" rel="noreferrer" target="_blank" style="font-size: 12px; color: rgba(25, 4, 69, 0.4);">via ECMWF Open Data</a>
+                        <br/><a href="https://data.ecmwf.int/forecasts/" class="external-link fade-colour" rel="noreferrer" target="_blank" style="font-size: 12px; color: #6f6a62;">via ECMWF Open Data</a>
                     </li>
                     <li>
                         <a href="https://www.ecmwf.int/en/forecasts/datasets/set-iii" class="external-link fade-colour" rel="noreferrer" target="_blank">ECMWF IFS Ensemble</a>
-                        <br/><a href="https://data.ecmwf.int/forecasts/" class="external-link fade-colour" rel="noreferrer" target="_blank" style="font-size: 12px; color: rgba(25, 4, 69, 0.4);">via ECMWF Open Data</a>
+                        <br/><a href="https://data.ecmwf.int/forecasts/" class="external-link fade-colour" rel="noreferrer" target="_blank" style="font-size: 12px; color: #6f6a62;">via ECMWF Open Data</a>
                     </li>
                     <li>
                         <a href="https://www.ecmwf.int/en/forecasts/datasets/set-x" class="external-link fade-colour" rel="noreferrer" target="_blank">ECMWF AIFS Ensemble</a>
-                        <br/><a href="https://data.ecmwf.int/forecasts/" class="external-link fade-colour" rel="noreferrer" target="_blank" style="font-size: 12px; color: rgba(25, 4, 69, 0.4);">via ECMWF Open Data</a>
+                        <br/><a href="https://data.ecmwf.int/forecasts/" class="external-link fade-colour" rel="noreferrer" target="_blank" style="font-size: 12px; color: #6f6a62;">via ECMWF Open Data</a>
                     </li>
                     <li>
                         <a href="https://www.emc.ncep.noaa.gov/emc/pages/numerical_forecast_systems/gfs.php" class="external-link fade-colour" rel="noreferrer" target="_blank">GFS Seamless</a>
-                        <br/><a href="https://data.dynamical.org" class="external-link fade-colour" rel="noreferrer" target="_blank" style="font-size: 12px; color: rgba(25, 4, 69, 0.4);">via dynamical.org</a>
+                        <br/><a href="https://data.dynamical.org" class="external-link fade-colour" rel="noreferrer" target="_blank" style="font-size: 12px; color: #6f6a62;">via dynamical.org</a>
                     </li>
                     <li>
                         <a href="https://www.emc.ncep.noaa.gov/emc/pages/numerical_forecast_systems/gefs.php" class="external-link fade-colour" rel="noreferrer" target="_blank">GEFS Ensemble</a>
-                        <br/><a href="https://noaa-gefs-pds.s3.amazonaws.com/" class="external-link fade-colour" rel="noreferrer" target="_blank" style="font-size: 12px; color: rgba(25, 4, 69, 0.4);">via NOAA S3</a>
+                        <br/><a href="https://noaa-gefs-pds.s3.amazonaws.com/" class="external-link fade-colour" rel="noreferrer" target="_blank" style="font-size: 12px; color: #6f6a62;">via NOAA S3</a>
                     </li>
                 </ul>
                 <p class="article-paragraph">
@@ -215,26 +221,26 @@ def crps_student_t(mu, sigma, nu, y):
                     of the seven predictors, and a model consisting of a single ensemble model (GEFS). CRPS values are split by lead-time to
                     forecast date
                 </p>
-                <table style="margin: 1.5em auto; border-collapse: collapse; font-size: 14px; color: rgba(25, 4, 69, 0.8);">
+                <table style="margin: 1.5em auto; border-collapse: collapse; font-size: 14px; color: #3d3933;">
                     <thead>
-                        <tr style="border-bottom: 2px solid rgba(25, 4, 69, 0.1);">
+                        <tr style="border-bottom: 2px solid #e6e1d8;">
                             <th style="padding: 6px 16px; text-align: left; font-weight: 600;"></th>
                             <th style="padding: 6px 16px; text-align: right; font-weight: 600;"><48hr</th>
                             <th style="padding: 6px 16px; text-align: right; font-weight: 600;">>48hr</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr style="border-bottom: 1px solid rgba(25, 4, 69, 0.06);">
+                        <tr style="border-bottom: 1px solid #ece8df;">
                             <td style="padding: 6px 16px; font-weight: 600;">Best</td>
                             <td style="padding: 6px 16px; text-align: right;">0.639</td>
                             <td style="padding: 6px 16px; text-align: right;">0.791</td>
                         </tr>
-                        <tr style="border-bottom: 1px solid rgba(25, 4, 69, 0.06);">
+                        <tr style="border-bottom: 1px solid #ece8df;">
                             <td style="padding: 6px 16px; font-weight: 600;">Equal</td>
                             <td style="padding: 6px 16px; text-align: right;">0.738</td>
                             <td style="padding: 6px 16px; text-align: right;">0.863</td>
                         </tr>
-                        <tr style="border-bottom: 1px solid rgba(25, 4, 69, 0.06);">
+                        <tr style="border-bottom: 1px solid #ece8df;">
                             <td style="padding: 6px 16px; font-weight: 600;">GEFS</td>
                             <td style="padding: 6px 16px; text-align: right;">1.284</td>
                             <td style="padding: 6px 16px; text-align: right;">1.698</td>
@@ -246,21 +252,21 @@ def crps_student_t(mu, sigma, nu, y):
                     was trained. The EMOS with learned weights performs much better on real data suggesting some overfitting in the
                     equal weights model - likely extreme station intercept values.
                 </p>
-                <table style="margin: 1.5em auto; border-collapse: collapse; font-size: 14px; color: rgba(25, 4, 69, 0.8);">
+                <table style="margin: 1.5em auto; border-collapse: collapse; font-size: 14px; color: #3d3933;">
                     <thead>
-                        <tr style="border-bottom: 2px solid rgba(25, 4, 69, 0.1);">
+                        <tr style="border-bottom: 2px solid #e6e1d8;">
                             <th style="padding: 6px 16px; text-align: left; font-weight: 600;"></th>
                             <th style="padding: 6px 16px; text-align: right; font-weight: 600;"><48hr</th>
                             <th style="padding: 6px 16px; text-align: right; font-weight: 600;">>48hr</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr style="border-bottom: 1px solid rgba(25, 4, 69, 0.06);">
+                        <tr style="border-bottom: 1px solid #ece8df;">
                             <td style="padding: 6px 16px; font-weight: 600;">Best</td>
                             <td style="padding: 6px 16px; text-align: right;">0.678</td>
                             <td style="padding: 6px 16px; text-align: right;">0.902</td>
                         </tr>
-                        <tr style="border-bottom: 1px solid rgba(25, 4, 69, 0.06);">
+                        <tr style="border-bottom: 1px solid #ece8df;">
                             <td style="padding: 6px 16px; font-weight: 600;">Equal</td>
                             <td style="padding: 6px 16px; text-align: right;">0.883</td>
                             <td style="padding: 6px 16px; text-align: right;">1.227</td>
@@ -285,43 +291,43 @@ def crps_student_t(mu, sigma, nu, y):
                 </p>
                 <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px 32px; margin-top: 1.5em; max-width: 500px; margin-left: auto; margin-right: auto;">
                     <!-- Seoul: T-24h model .143 market .148, T-12h model .145 market .160 -->
-                    <svg viewBox="0 0 160 170" style="width: 100%; font-family: 'Lato', sans-serif;">
+                    <svg viewBox="0 0 160 170" style="width: 100%; font-family: 'Geist', sans-serif;">
                         <text x="80" y="15" text-anchor="middle" font-size="12" font-weight="600" fill="rgba(25, 4, 69, 0.8)">Seoul</text>
                         <!-- T-24h pair -->
                         <rect x="18" y="47" width="18" height="83" rx="3" fill="#12A594"/>
-                        <text x="27" y="44" text-anchor="middle" font-size="8" fill="rgba(25, 4, 69, 0.45)">.143</text>
+                        <text x="27" y="44" text-anchor="middle" font-size="8" fill="#8a847a">.143</text>
                         <rect x="38" y="44" width="18" height="86" rx="3" fill="#3E6FF0"/>
-                        <text x="47" y="41" text-anchor="middle" font-size="8" fill="rgba(25, 4, 69, 0.45)">.148</text>
+                        <text x="47" y="41" text-anchor="middle" font-size="8" fill="#8a847a">.148</text>
                         <!-- T-12h pair -->
                         <rect x="84" y="46" width="18" height="84" rx="3" fill="#12A594"/>
-                        <text x="93" y="43" text-anchor="middle" font-size="8" fill="rgba(25, 4, 69, 0.45)">.145</text>
+                        <text x="93" y="43" text-anchor="middle" font-size="8" fill="#8a847a">.145</text>
                         <rect x="104" y="37" width="18" height="93" rx="3" fill="#3E6FF0"/>
-                        <text x="113" y="34" text-anchor="middle" font-size="8" fill="rgba(25, 4, 69, 0.45)">.160</text>
+                        <text x="113" y="34" text-anchor="middle" font-size="8" fill="#8a847a">.160</text>
                         <!-- Baseline -->
-                        <line x1="12" y1="130" x2="128" y2="130" stroke="rgba(25, 4, 69, 0.1)" stroke-width="1"/>
-                        <text x="37" y="144" text-anchor="middle" font-size="9" fill="rgba(25, 4, 69, 0.35)">T-24h</text>
-                        <text x="103" y="144" text-anchor="middle" font-size="9" fill="rgba(25, 4, 69, 0.35)">T-12h</text>
+                        <line x1="12" y1="130" x2="128" y2="130" stroke="#e6e1d8" stroke-width="1"/>
+                        <text x="37" y="144" text-anchor="middle" font-size="9" fill="#a39d93">T-24h</text>
+                        <text x="103" y="144" text-anchor="middle" font-size="9" fill="#a39d93">T-12h</text>
                     </svg>
                     <!-- Tokyo: T-24h model .141 market .148, T-12h model .154 market .159 -->
-                    <svg viewBox="0 0 160 170" style="width: 100%; font-family: 'Lato', sans-serif;">
+                    <svg viewBox="0 0 160 170" style="width: 100%; font-family: 'Geist', sans-serif;">
                         <text x="80" y="15" text-anchor="middle" font-size="12" font-weight="600" fill="rgba(25, 4, 69, 0.8)">Tokyo</text>
                         <!-- T-24h pair -->
                         <rect x="18" y="48" width="18" height="82" rx="3" fill="#12A594"/>
-                        <text x="27" y="45" text-anchor="middle" font-size="8" fill="rgba(25, 4, 69, 0.45)">.141</text>
+                        <text x="27" y="45" text-anchor="middle" font-size="8" fill="#8a847a">.141</text>
                         <rect x="38" y="44" width="18" height="86" rx="3" fill="#3E6FF0"/>
-                        <text x="47" y="41" text-anchor="middle" font-size="8" fill="rgba(25, 4, 69, 0.45)">.148</text>
+                        <text x="47" y="41" text-anchor="middle" font-size="8" fill="#8a847a">.148</text>
                         <!-- T-12h pair -->
                         <rect x="84" y="40" width="18" height="90" rx="3" fill="#12A594"/>
-                        <text x="93" y="37" text-anchor="middle" font-size="8" fill="rgba(25, 4, 69, 0.45)">.154</text>
+                        <text x="93" y="37" text-anchor="middle" font-size="8" fill="#8a847a">.154</text>
                         <rect x="104" y="37" width="18" height="93" rx="3" fill="#3E6FF0"/>
-                        <text x="113" y="34" text-anchor="middle" font-size="8" fill="rgba(25, 4, 69, 0.45)">.159</text>
+                        <text x="113" y="34" text-anchor="middle" font-size="8" fill="#8a847a">.159</text>
                         <!-- Baseline -->
-                        <line x1="12" y1="130" x2="128" y2="130" stroke="rgba(25, 4, 69, 0.1)" stroke-width="1"/>
-                        <text x="37" y="144" text-anchor="middle" font-size="9" fill="rgba(25, 4, 69, 0.35)">T-24h</text>
-                        <text x="103" y="144" text-anchor="middle" font-size="9" fill="rgba(25, 4, 69, 0.35)">T-12h</text>
+                        <line x1="12" y1="130" x2="128" y2="130" stroke="#e6e1d8" stroke-width="1"/>
+                        <text x="37" y="144" text-anchor="middle" font-size="9" fill="#a39d93">T-24h</text>
+                        <text x="103" y="144" text-anchor="middle" font-size="9" fill="#a39d93">T-12h</text>
                     </svg>
                 </div>
-                <div style="display: flex; align-items: center; gap: 16px; font-size: 12px; color: rgba(25, 4, 69, 0.5); margin-top: 12px; justify-content: center;">
+                <div style="display: flex; align-items: center; gap: 16px; font-size: 12px; color: #6f6a62; margin-top: 12px; justify-content: center;">
                     <span style="display: flex; align-items: center; gap: 5px;"><span style="display: inline-block; width: 10px; height: 10px; border-radius: 2px; background: #12A594;"></span>Model</span>
                     <span style="display: flex; align-items: center; gap: 5px;"><span style="display: inline-block; width: 10px; height: 10px; border-radius: 2px; background: #3E6FF0;"></span>Market</span>
                     <span>Lower is better</span>
@@ -336,43 +342,43 @@ def crps_student_t(mu, sigma, nu, y):
                 <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px 32px; margin-top: 1.5em; max-width: 500px; margin-left: auto; margin-right: auto;">
 
                     <!-- London: T-24h model .126 market .129, T-12h model .126 market .129 -->
-                    <svg viewBox="0 0 160 170" style="width: 100%; font-family: 'Lato', sans-serif;">
+                    <svg viewBox="0 0 160 170" style="width: 100%; font-family: 'Geist', sans-serif;">
                         <text x="80" y="15" text-anchor="middle" font-size="12" font-weight="600" fill="rgba(25, 4, 69, 0.8)">London</text>
                         <!-- T-24h pair -->
                         <rect x="18" y="57" width="18" height="73" rx="3" fill="#12A594"/>
-                        <text x="27" y="54" text-anchor="middle" font-size="8" fill="rgba(25, 4, 69, 0.45)">.126</text>
+                        <text x="27" y="54" text-anchor="middle" font-size="8" fill="#8a847a">.126</text>
                         <rect x="38" y="55" width="18" height="75" rx="3" fill="#3E6FF0"/>
-                        <text x="47" y="52" text-anchor="middle" font-size="8" fill="rgba(25, 4, 69, 0.45)">.129</text>
+                        <text x="47" y="52" text-anchor="middle" font-size="8" fill="#8a847a">.129</text>
                         <!-- T-12h pair -->
                         <rect x="84" y="57" width="18" height="73" rx="3" fill="#12A594"/>
-                        <text x="93" y="54" text-anchor="middle" font-size="8" fill="rgba(25, 4, 69, 0.45)">.126</text>
+                        <text x="93" y="54" text-anchor="middle" font-size="8" fill="#8a847a">.126</text>
                         <rect x="104" y="55" width="18" height="75" rx="3" fill="#3E6FF0"/>
-                        <text x="113" y="52" text-anchor="middle" font-size="8" fill="rgba(25, 4, 69, 0.45)">.129</text>
+                        <text x="113" y="52" text-anchor="middle" font-size="8" fill="#8a847a">.129</text>
                         <!-- Baseline -->
-                        <line x1="12" y1="130" x2="128" y2="130" stroke="rgba(25, 4, 69, 0.1)" stroke-width="1"/>
-                        <text x="37" y="144" text-anchor="middle" font-size="9" fill="rgba(25, 4, 69, 0.35)">T-24h</text>
-                        <text x="103" y="144" text-anchor="middle" font-size="9" fill="rgba(25, 4, 69, 0.35)">T-12h</text>
+                        <line x1="12" y1="130" x2="128" y2="130" stroke="#e6e1d8" stroke-width="1"/>
+                        <text x="37" y="144" text-anchor="middle" font-size="9" fill="#a39d93">T-24h</text>
+                        <text x="103" y="144" text-anchor="middle" font-size="9" fill="#a39d93">T-12h</text>
                     </svg>
                     <!-- Madrid: T-24h model .140 market .126, T-12h model .124 market .108 -->
-                    <svg viewBox="0 0 160 170" style="width: 100%; font-family: 'Lato', sans-serif;">
+                    <svg viewBox="0 0 160 170" style="width: 100%; font-family: 'Geist', sans-serif;">
                         <text x="80" y="15" text-anchor="middle" font-size="12" font-weight="600" fill="rgba(25, 4, 69, 0.8)">Madrid</text>
                         <!-- T-24h pair -->
                         <rect x="18" y="49" width="18" height="81" rx="3" fill="#12A594"/>
-                        <text x="27" y="46" text-anchor="middle" font-size="8" fill="rgba(25, 4, 69, 0.45)">.140</text>
+                        <text x="27" y="46" text-anchor="middle" font-size="8" fill="#8a847a">.140</text>
                         <rect x="38" y="57" width="18" height="73" rx="3" fill="#3E6FF0"/>
-                        <text x="47" y="54" text-anchor="middle" font-size="8" fill="rgba(25, 4, 69, 0.45)">.126</text>
+                        <text x="47" y="54" text-anchor="middle" font-size="8" fill="#8a847a">.126</text>
                         <!-- T-12h pair -->
                         <rect x="84" y="58" width="18" height="72" rx="3" fill="#12A594"/>
-                        <text x="93" y="55" text-anchor="middle" font-size="8" fill="rgba(25, 4, 69, 0.45)">.124</text>
+                        <text x="93" y="55" text-anchor="middle" font-size="8" fill="#8a847a">.124</text>
                         <rect x="104" y="68" width="18" height="62" rx="3" fill="#3E6FF0"/>
-                        <text x="113" y="65" text-anchor="middle" font-size="8" fill="rgba(25, 4, 69, 0.45)">.108</text>
+                        <text x="113" y="65" text-anchor="middle" font-size="8" fill="#8a847a">.108</text>
                         <!-- Baseline -->
-                        <line x1="12" y1="130" x2="128" y2="130" stroke="rgba(25, 4, 69, 0.1)" stroke-width="1"/>
-                        <text x="37" y="144" text-anchor="middle" font-size="9" fill="rgba(25, 4, 69, 0.35)">T-24h</text>
-                        <text x="103" y="144" text-anchor="middle" font-size="9" fill="rgba(25, 4, 69, 0.35)">T-12h</text>
+                        <line x1="12" y1="130" x2="128" y2="130" stroke="#e6e1d8" stroke-width="1"/>
+                        <text x="37" y="144" text-anchor="middle" font-size="9" fill="#a39d93">T-24h</text>
+                        <text x="103" y="144" text-anchor="middle" font-size="9" fill="#a39d93">T-12h</text>
                     </svg>
                 </div>
-                <div style="display: flex; align-items: center; gap: 16px; font-size: 12px; color: rgba(25, 4, 69, 0.5); margin-top: 12px; justify-content: center;">
+                <div style="display: flex; align-items: center; gap: 16px; font-size: 12px; color: #6f6a62; margin-top: 12px; justify-content: center;">
                     <span style="display: flex; align-items: center; gap: 5px;"><span style="display: inline-block; width: 10px; height: 10px; border-radius: 2px; background: #12A594;"></span>Model</span>
                     <span style="display: flex; align-items: center; gap: 5px;"><span style="display: inline-block; width: 10px; height: 10px; border-radius: 2px; background: #3E6FF0;"></span>Market</span>
                     <span>Lower is better</span>
@@ -413,9 +419,12 @@ def crps_student_t(mu, sigma, nu, y):
                         </li>
                     </ol>
                 </div>
-                <p class="article-paragraph">
-                    <a class="footer-link fade-colour" href="../index.html">Trevor McCann </a>
-                </p>
+                <div class="article-divider" style="margin-top: 64px;"></div>
+                <div class="article-footer-nav">
+                    <a href="../index.html" class="back-link">← More posts</a>
+                    <a href="sudoku.html" class="next-link"><span class="next-name">Sudoku</span> <span class="next-desc">— Magic squares &amp; linear programs</span> <span class="next-arrow">→</span></a>
+                </div>
+                <div class="article-footer-text">Trevor McCann</div>
             </div>
             </article>
         </div>

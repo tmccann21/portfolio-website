@@ -1,57 +1,125 @@
-.article-title {
+.article-header {
   display: flex;
-  align-items: flex-end;
   justify-content: space-between;
-  gap: 16px;
-  flex-wrap: wrap;
-  padding-bottom: 28px;
-  border-bottom: 1px solid rgba(25, 4, 69, 0.1);
-  
-  h2 {
-    font-weight: 800;
-    background: linear-gradient(100deg, #12A594 0%, #3E6FF0 70%, #6236FF 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    width: fit-content;
-    text-transform: uppercase;
+  align-items: center;
+  font-size: 14px;
+}
+
+.article-header-name, .article-header-name:focus, .article-header-name:active, .article-header-name:visited {
+  font-weight: 600;
+  color: #1b1916;
+  text-decoration: none;
+}
+
+.article-header-name:hover { color: #0f5f56; }
+
+.article-header-back, .article-header-back:focus, .article-header-back:active, .article-header-back:visited {
+  color: #157f72;
+  text-decoration: none;
+}
+
+.article-header-back:hover { color: #0f5f56; }
+
+.article-title {
+  margin: 64px 0 0;
+  border-bottom: none;
+  padding-bottom: 0;
+
+  h1 {
+    font-size: 48px;
+    font-weight: 700;
+    letter-spacing: -.04em;
+    line-height: 1.02;
   }
 }
 
+.article-subtitle {
+  margin-top: 16px;
+  font-size: 15px;
+  color: #6f6a62;
+}
+
+.article-subtitle .separator {
+  margin: 0 8px;
+  color: #c9c3b8;
+}
+
+.article-subtitle .date {
+  font-family: 'Geist Mono', monospace;
+  font-size: 12.5px;
+}
+
+.article-divider {
+  height: 1px;
+  background: #1b1916;
+  margin: 36px 0 40px;
+}
+
 .article-content {
-  font-size: 16px;
-  line-height: 26px;
+  font-size: 17px;
+  line-height: 1.7;
   font-weight: 400;
-  letter-spacing: -0.17px;
-  margin-top: 32px;
+  letter-spacing: -.005em;
 }
 
 .article-paragraph {
   padding-top: 1em;
-  line-height: 1.6;
+  line-height: 1.7;
+  text-wrap: pretty;
 }
 
-.home-link, .home-link:focus, .home-link:active, .home-link:visited {
-  font-size: 16px;
+.article-content a, .article-content a:visited {
+  color: #157f72;
+  text-decoration: none;
+  border-bottom: 1px solid #157f72;
+}
+
+.article-content a:hover {
+  color: #0f5f56;
+  border-bottom-color: #0f5f56;
+}
+
+.article-footer-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 14px;
+  gap: 24px;
+  margin-top: 24px;
+}
+
+.article-footer-nav .back-link, .article-footer-nav .back-link:visited {
+  color: #157f72;
+  text-decoration: none;
+}
+
+.article-footer-nav .back-link:hover { color: #0f5f56; }
+
+.article-footer-nav .next-link, .article-footer-nav .next-link:visited {
+  color: #1b1916;
+  text-decoration: none;
+  text-align: right;
+}
+
+.article-footer-nav .next-link:hover { opacity: 0.7; }
+
+.article-footer-nav .next-link .next-name {
   font-weight: 600;
-  padding-bottom: 4px;
-  text-decoration: none;
-  color: rgba(25, 4, 69, 0.7);
-  white-space: nowrap;
 }
 
-.home-link:hover {
-  color: #6236FF;
+.article-footer-nav .next-link .next-desc {
+  color: #6f6a62;
 }
 
-.footer-link, .footer-link:focus, .footer-link:active, .footer-link:visited {
-  color: rgba(25, 4, 69, 0.8);
-  text-decoration: none;
-  font-weight: 400;
+.article-footer-nav .next-link .next-arrow {
+  color: #157f72;
 }
 
-.footer-link:hover {
-  color: #6236FF;
+.article-footer-text {
+  margin-top: 80px;
+  font-family: 'Geist Mono', monospace;
+  font-size: 11.5px;
+  color: #a39d93;
 }
 
 .model-list {
@@ -77,27 +145,27 @@
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #12A594 0%, #3E6FF0 55%, #6236FF 100%);
+  background: #157f72;
 }
 
 .model-list a,
 .model-list a:focus,
 .model-list a:active,
 .model-list a:visited {
-  color: rgba(25, 4, 69, 0.8);
+  color: #3d3933;
   font-size: 15px;
   font-weight: 400;
   text-decoration: none;
 }
 
 .model-list a:hover {
-  color: #6236FF;
+  color: #0f5f56;
 }
 
 .references {
   margin-top: 2em;
   padding-top: 1.5em;
-  border-top: 1px solid rgba(25, 4, 69, 0.1);
+  border-top: 1px solid #e6e1d8;
 }
 
 .references h3 {
@@ -114,27 +182,30 @@
 .reference-list li {
   font-size: 14px;
   line-height: 1.6;
-  color: rgba(25, 4, 69, 0.65);
+  color: #6f6a62;
   padding-bottom: 0.6em;
 }
 
 .citation-link, .citation-link:visited {
-  color: #3E6FF0;
+  color: #157f72;
   text-decoration: none;
   font-size: 0.75em;
   font-weight: 600;
 }
 
 .citation-link:hover {
-  color: #6236FF;
+  color: #0f5f56;
 }
 
 /* Mobile */
 @media(max-width: 539px) {
-  .article-title {
+  .article-title h1 {
+    font-size: 36px;
+  }
+
+  .article-footer-nav {
     flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
+    gap: 12px;
   }
 
   .model-list {

@@ -40,7 +40,8 @@
         }
         </script>
 
-        <link href="https://fonts.googleapis.com/css2?family=Lato:wght@100;300;400;600;700;800;900&display=swap" rel="stylesheet">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
         <link rel="stylesheet" type="text/css" href="../style/main.css">
         <link rel="stylesheet" type="text/css" href="../style/article.css">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
@@ -50,10 +51,15 @@
     <body>
         <div id="content">
             <article>
-            <div class="article-title">
-                <h2>Sudoku</h2>
-                <a href="../index.html" class="home-link light-grey fade-colour">More Posts</a>
+            <div class="article-header">
+                <a href="../index.html" class="article-header-name">Trevor McCann</a>
+                <a href="../index.html" class="article-header-back">← More posts</a>
             </div>
+            <div class="article-title">
+                <h1>Sudoku</h1>
+            </div>
+            <div class="article-subtitle">Magic squares &amp; linear programs <span class="separator">·</span> <span class="date">2023</span></div>
+            <div class="article-divider"></div>
             <div class="article-content">
                 <h3> Sudoku Variants </h3>
                 <p class="article-paragraph">
@@ -361,10 +367,12 @@ Total Constraints: 3090
 </pre>
                     </div>
                 </div>
-                <br>
-                <p class="article-paragraph">
-                    <a class="footer-link fade-colour" href="../index.html">Trevor McCann </a>
-                </p>
+                <div class="article-divider" style="margin-top: 64px;"></div>
+                <div class="article-footer-nav">
+                    <a href="../index.html" class="back-link">← More posts</a>
+                    <a href="weather.html" class="next-link"><span class="next-name">Weather</span> <span class="next-desc">— Predicting the future</span> <span class="next-arrow">→</span></a>
+                </div>
+                <div class="article-footer-text">Trevor McCann</div>
             </div>
             </article>
         </div>
