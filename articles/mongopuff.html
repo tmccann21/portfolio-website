@@ -144,7 +144,7 @@
                     disk functioning as a write-ahead log.
                 </p>
                 <p class="article-paragraph">
-                    <span class="tab" />The disk write is on the order of microseconds, so we always keep up with the oplog head — at the cost
+                    <span class="tab" />The disk write is on the order of microseconds, so we always keep up with the oplog head - at the cost
                     of disk space. The previous benchmark, run with the spool directory enabled, shows the lag stays ~0 and during the degradation
                     the spool directory size grows linearly. As soon as the lag resolves, the spool directory is quickly flushed and disk usage
                     goes back to 0.
