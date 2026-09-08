@@ -1,0 +1,392 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <title>Durable Buffers in mongopuff | Trevor McCann</title>
+        <meta name="description" content="Using a spool directory as a durable buffer to handle MongoDB oplog eviction">
+        <meta name="author" content="Trevor McCann">
+        <meta name="keywords" content="mongodb, oplog, change streams, spool directory, write-ahead log, durable buffer, mongopuff, turbopuffer, open source">
+        <meta content="width=device-width, initial-scale=1" name="viewport" />
+        <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <link rel="shortcut icon" href="/favicon.ico" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+        <meta name="apple-mobile-web-app-title" content="tr" />
+        <link rel="canonical" href="https://trevormccann.com/articles/mongopuff.html" />
+
+        <!-- Open Graph -->
+        <meta property="og:title" content="Durable Buffers in mongopuff" />
+        <meta property="og:description" content="Using a spool directory as a durable buffer to handle MongoDB oplog eviction" />
+        <meta property="og:type" content="article" />
+        <meta property="og:url" content="https://trevormccann.com/articles/mongopuff.html" />
+
+        <!-- Twitter Card -->
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:title" content="Durable Buffers in mongopuff" />
+        <meta name="twitter:description" content="Using a spool directory as a durable buffer to handle MongoDB oplog eviction" />
+
+        <!-- Structured Data -->
+        <script type="application/ld+json">
+        {
+          "@context": "https://schema.org",
+          "@type": "Article",
+          "headline": "Durable Buffers in mongopuff",
+          "description": "Using a spool directory as a durable buffer to handle MongoDB oplog eviction",
+          "url": "https://trevormccann.com/articles/mongopuff.html",
+          "author": {
+            "@type": "Person",
+            "name": "Trevor McCann",
+            "url": "https://trevormccann.com/"
+          }
+        }
+        </script>
+
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+        <link rel="stylesheet" type="text/css" href="../style/main.css">
+        <link rel="stylesheet" type="text/css" href="../style/article.css">
+        <script src="https://d3js.org/d3.v7.min.js"></script>
+    </head>
+    <body>
+        <div id="content">
+            <article>
+            <div class="article-header">
+                <a href="../index.html" class="article-header-name">Trevor McCann</a>
+                <a href="../index.html" class="article-header-back">← More posts</a>
+            </div>
+            <div class="article-title">
+                <h1>mongopuff</h1>
+            </div>
+            <div class="article-subtitle">High-throughput CDC <span class="separator">·</span> <span class="date">2026</span></div>
+            <div class="article-divider"></div>
+            <div class="article-content">
+                <p class="article-paragraph">
+                    <span class="tab" />mongopuff is a logical replication service for MongoDB and turbopuffer that I've been working on as a
+                    side-project. I was prototyping with turbopuffer at
+                    <a href="https://huntr.co/" class="external-link fade-colour" rel="noreferrer" target="_blank">Huntr</a>
+                    when I came across the
+                    <a href="https://github.com/a24films/puffgres" class="external-link fade-colour" rel="noreferrer" target="_blank">puffgres</a>
+                    project by a24 films. I wasn't able to find an equivalent for MongoDB, and after watching the talk the puffgres team cited on 
+                    <a href="https://www.youtube.com/watch?v=_GpBkplsGus" class="external-link fade-colour" rel="noreferrer" target="_blank">toolmaking</a>
+                    I decided to start one myself.
+                </p>
+                <p class="article-paragraph">
+                    <span class="tab" />In MongoDB, the fastest path to logical replication is to listen to the native change stream. Under the hood
+                    the change stream is a tailable cursor that reads events from the oplog. The oplog is an internal capped collection that acts
+                    as an append-only replication log. Each oplog event contains a resume token that a consumer can use to resume the stream
+                    in the event of a disconnection.
+                </p>
+                <br/>
+                <h3> Delivery Guarantee</h3>
+                <p class="article-paragraph">
+                    <span class="tab" />mongopuff was designed to guarantee at-least-once delivery, and strive for effectively-once delivery.
+                    Each record persisted to turbopuffer is appended with the <span class="inline-code">clusterTime</span> from the change
+                    stream event, which is used with turbopuffer's conditional writes to ensure the latest data is not overwritten. The change stream
+                    cursor is only advanced after the event is durably written, preventing data loss in case the service crashes or disconnects
+                    unexpectedly.
+                </p>
+                <h3> Oplog Exhaustion </h3>
+                <p class="article-paragraph">
+                    <span class="tab" />MongoDB's oplog is a <span style="font-style: italic;">capped</span> collection, which means it grows until
+                    a certain size and then new entries evict older ones. By default, MongoDB allocates 5% of available disk space as the max size
+                    for the oplog collection. Therefore, it's possible that if the consumer cannot advance its cursor fast enough the resume
+                    token can get evicted from the oplog forcing the stream to end. With no resume checkpoint, this forces the operator to
+                    run a potentially expensive backfill operation to re-sync the collections.
+                </p>
+                <br/>
+                <p class="article-paragraph">
+                    <span class="tab" />In most circumstances, this should never be a concern in mongopuff. Each consumer runs concurrently in
+                    its own goroutine and can realistically process hundreds of thousands of events per second without issue. The failure point lies
+                    in potential write latency to turbopuffer. mongopuff blocks event consumption while waiting for the turbopuffer write to
+                    respond successfully, to confirm delivery before advancing the change stream token. Against turbopuffer's reported p50, p90 and
+                    p99 write latencies, mongopuff can theoretically handle the following throughputs.
+                </p>
+                <table style="margin: 1.5em auto; border-collapse: collapse; font-size: 14px; color: #3d3933;">
+                    <thead>
+                        <tr style="border-bottom: 2px solid #e6e1d8;">
+                            <th style="padding: 6px 16px; text-align: left; font-weight: 600;">Percentile</th>
+                            <th style="padding: 6px 16px; text-align: right; font-weight: 600;">Write Latency</th>
+                            <th style="padding: 6px 16px; text-align: right; font-weight: 600;">Throughput</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="border-bottom: 1px solid #ece8df;">
+                            <td style="padding: 6px 16px;">p50</td>
+                            <td style="padding: 6px 16px; text-align: right;">165ms</td>
+                            <td style="padding: 6px 16px; text-align: right;">6,113 events/sec</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid #ece8df;">
+                            <td style="padding: 6px 16px;">p90</td>
+                            <td style="padding: 6px 16px; text-align: right;">248ms</td>
+                            <td style="padding: 6px 16px; text-align: right;">4,082 events/sec</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid #ece8df;">
+                            <td style="padding: 6px 16px;">p99</td>
+                            <td style="padding: 6px 16px; text-align: right;">850ms</td>
+                            <td style="padding: 6px 16px; text-align: right;">1,197 events/sec</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p class="article-paragraph">
+                    <span class="tab" />However, in a scenario where the writer experiences sustained degradation, the distance between
+                    the cursor and the oplog head can balloon quickly. To demonstrate this, I set up a MongoDB instance with a 10MB oplog
+                    and a writer inserting 3,000 documents per second. mongopuff ran in CDC mode with a simulated write latency of 5ms -
+                    a pace the service can handle comfortably. After 15 seconds, I increased the latency to 1,000ms to simulate a degradation.
+                    The cursor was evicted approximately 14 seconds later.
+                </p>
+                <div id="chart-direct" style="margin: 2em 0;"></div>
+                <h3> A Durable Consumer </h3>
+                <p class="article-paragraph">
+                    <span class="tab" />Consistent thousands of writes per second would exceed my own use case for this tool, but the
+                    failure requiring a full backfill warranted addressing the issue. The service can effectively read change stream events
+                    as fast as they are emitted, so the solution is to write change stream events to some internal buffer without blocking
+                    for the writer. In memory would run the risk of a crash losing events after the token was advanced, so some level of
+                    persistence is required. In keeping mongopuff simple and self-contained, the solution is a spool directory written to
+                    disk functioning as a write-ahead log.
+                </p>
+                <p class="article-paragraph">
+                    <span class="tab" />The disk write is on the order of microseconds, so we always keep up with the oplog head — at the cost
+                    of disk space. The previous benchmark, run with the spool directory enabled, shows the lag stays ~0 and during the degradation
+                    the spool directory size grows linearly. As soon as the lag resolves, the spool directory is quickly flushed and disk usage
+                    goes back to 0.
+                </p>
+                <div id="chart-spooled" style="margin: 2em 0;"></div>
+                <p class="article-paragraph">
+                    <span class="tab" />If the mongopuff project is interesting, you can find it on
+                    <a href="https://github.com/tmccann21/mongopuff" class="external-link fade-colour" rel="noreferrer" target="_blank">Github</a>.
+                    Contributors or feedback are gladly welcomed - if you end up using mongopuff, please reach out!
+                </p>
+                <div class="article-divider" style="margin-top: 64px;"></div>
+                <div class="article-footer-nav">
+                    <a href="../index.html" class="nav-link"><span class="nav-arrow">←</span> More posts</a>
+                    <a href="weather.html" class="nav-link">Weather <span class="nav-arrow">→</span></a>
+                </div>
+                <div class="article-footer-text">Trevor McCann</div>
+            </div>
+            </article>
+        </div>
+    <script>
+    (function() {
+      var C = {
+        direct: '#ff7400',
+        lag: '#12A594',
+        spool: '#1b1916',
+        grid: '#ece8df',
+        label: '#6f6a62',
+        warmup: 'rgba(0,0,0,0.02)',
+        spike: 'rgba(255,116,0,0.06)',
+        recovery: 'rgba(18,165,148,0.045)'
+      };
+
+      var phases = [
+        {x0:0, x1:15, label:'warmup', fill:C.warmup},
+        {x0:15, x1:45, label:'spike', fill:C.spike},
+        {x0:45, x1:76, label:'recovery', fill:C.recovery}
+      ];
+
+      var directLag = [
+        [.5,0],[1,0],[1.5,0],[2,0],[2.5,0],[3,0],[3.5,0],[4,0],[4.5,0],[5,0],
+        [5.5,0],[6,0],[6.5,0],[7,0],[7.5,0],[8,0],[8.5,0],[9,0],[9.5,0],[10,0],
+        [10.5,0],[11,0],[11.5,0],[12,0],[12.5,0],[13,0],[13.5,0],[14,0],[14.5,0],[15,0],
+        [15.5,1394],[16,2894],[16.5,3370],[17,4870],[17.5,5346],[18,6846],[18.5,7322],
+        [19,8822],[19.5,9298],[20,10798],[20.5,11274],[21,12774],[21.5,13250],[22,14750],
+        [22.5,15226],[23,16726],[23.5,17202],[24,18702],[24.5,19178],[25,20678],[25.5,21154],
+        [26,22654],[26.5,23130],[27,24630],[27.5,25106],[28,26556],[28.5,28106],[29,29250],
+        [29.5,30800]
+      ];
+
+      var spooledLag = [
+        [.5,0],[24,0],[24.5,100],[25,0],[30.5,0],[31,50],[31.5,0],[75.5,0]
+      ];
+
+      var spoolRaw = [
+        [.5,0],[15,0],
+        [15.5,792578],[16,1188867],[16.5,1585156],[17,1981445],[17.5,2377734],
+        [18,2774023],[18.5,3170312],[19,3566601],[19.5,3962890],[20,4359179],
+        [20.5,4755468],[21,5151757],[21.5,5151757],[22,5944335],[22.5,5944335],
+        [23,6736913],[23.5,6736913],[24,7529491],[24.5,7529491],[25,8322069],
+        [25.5,8322069],[26,9114647],[26.5,9114647],[27,9907225],[27.5,9907225],
+        [28,10303514],[28.5,10699803],[29,11096092],[29.5,11492381],[30,11888670],
+        [30.5,12284959],[31,12681248],[31.5,13077537],[32,13473826],[32.5,13870115],
+        [33,14266404],[33.5,14662693],[34,15058982],[34.5,15455271],[35,15851560],
+        [35.5,15851560],[36,16644138],[36.5,16644138],[37,17436716],[37.5,17436716],
+        [38,18229294],[38.5,18229294],[39,19021872],[39.5,19021872],[40,19814450],
+        [40.5,19814450],[41,20607028],[41.5,20607028],[42,21003317],[42.5,21399606],
+        [43,21795895],[43.5,22192184],[44,22588473],[44.5,22984762],[45,23381051],
+        [45.5,17436716],[46,0],[75.5,0]
+      ];
+
+      function chart(id, cfg) {
+        var el = document.getElementById(id);
+        if (!el) return;
+        var W = el.clientWidth || 680;
+        var H = 280;
+        var hasY2 = !!cfg.y2Max;
+        var m = {t:32, r: hasY2 ? 56 : 20, b:36, l:56};
+        var w = W - m.l - m.r;
+        var h = H - m.t - m.b;
+
+        var svg = d3.select('#' + id).append('svg')
+          .attr('viewBox', '0 0 ' + W + ' ' + H)
+          .style('width', '100%').style('height', 'auto');
+
+        var g = svg.append('g')
+          .attr('transform', 'translate(' + m.l + ',' + m.t + ')');
+
+        var x = d3.scaleLinear([0, cfg.xMax], [0, w]);
+        var y = d3.scaleLinear([0, cfg.yMax], [h, 0]);
+        var y2 = hasY2 ? d3.scaleLinear([0, cfg.y2Max], [h, 0]) : null;
+
+        // Phase bands
+        phases.forEach(function(p) {
+          var px0 = Math.max(x(p.x0), 0);
+          var px1 = Math.min(x(p.x1), w);
+          if (px1 <= px0) return;
+          g.append('rect')
+            .attr('x', px0).attr('y', 0)
+            .attr('width', px1 - px0).attr('height', h)
+            .attr('fill', p.fill);
+          g.append('text')
+            .attr('x', (px0 + px1) / 2).attr('y', -10)
+            .attr('text-anchor', 'middle')
+            .attr('font-size', 10)
+            .attr('font-family', 'Geist Mono, monospace')
+            .attr('fill', C.label)
+            .text(p.label);
+        });
+
+        // Horizontal grid (left y-axis)
+        y.ticks(5).forEach(function(t) {
+          g.append('line')
+            .attr('x1', 0).attr('x2', w)
+            .attr('y1', y(t)).attr('y2', y(t))
+            .attr('stroke', C.grid).attr('stroke-width', .5);
+        });
+
+        // X axis
+        g.append('g').attr('transform', 'translate(0,' + h + ')')
+          .call(d3.axisBottom(x).ticks(8).tickFormat(function(d) { return d + 's'; }))
+          .call(function(a) { a.select('.domain').attr('stroke', C.grid); })
+          .call(function(a) { a.selectAll('.tick line').attr('stroke', C.grid); })
+          .call(function(a) {
+            a.selectAll('text').attr('fill', C.label)
+              .attr('font-size', 11).attr('font-family', 'Geist Mono, monospace');
+          });
+
+        // Left Y axis
+        var yColor = hasY2 ? cfg.series[0].color : C.label;
+        g.append('g')
+          .call(d3.axisLeft(y).ticks(5).tickFormat(cfg.yFmt))
+          .call(function(a) { a.select('.domain').remove(); })
+          .call(function(a) { a.selectAll('.tick line').remove(); })
+          .call(function(a) {
+            a.selectAll('text').attr('fill', yColor)
+              .attr('font-size', 11).attr('font-family', 'Geist Mono, monospace');
+          });
+
+        if (cfg.yLabel) {
+          g.append('text')
+            .attr('transform', 'rotate(-90)')
+            .attr('x', -h / 2).attr('y', -42)
+            .attr('text-anchor', 'middle')
+            .attr('font-size', 11)
+            .attr('font-family', 'Geist, sans-serif')
+            .attr('fill', yColor)
+            .text(cfg.yLabel);
+        }
+
+        // Right Y axis
+        if (y2) {
+          var y2Color = cfg.series.filter(function(s) { return s.axis === 'right'; })[0].color;
+          g.append('g')
+            .attr('transform', 'translate(' + w + ',0)')
+            .call(d3.axisRight(y2).ticks(5).tickFormat(cfg.y2Fmt))
+            .call(function(a) { a.select('.domain').remove(); })
+            .call(function(a) { a.selectAll('.tick line').remove(); })
+            .call(function(a) {
+              a.selectAll('text').attr('fill', y2Color)
+                .attr('font-size', 11).attr('font-family', 'Geist Mono, monospace');
+            });
+
+          if (cfg.y2Label) {
+            g.append('text')
+              .attr('transform', 'rotate(90)')
+              .attr('x', h / 2).attr('y', -(w + 42))
+              .attr('text-anchor', 'middle')
+              .attr('font-size', 11)
+              .attr('font-family', 'Geist, sans-serif')
+              .attr('fill', y2Color)
+              .text(cfg.y2Label);
+          }
+        }
+
+        // Lines
+        cfg.series.forEach(function(s) {
+          var yScale = (s.axis === 'right' && y2) ? y2 : y;
+          var line = d3.line()
+            .x(function(d) { return x(d[0]); })
+            .y(function(d) { return yScale(d[1]); });
+
+          g.append('path').datum(s.data)
+            .attr('fill', 'none')
+            .attr('stroke', s.color)
+            .attr('stroke-width', 2)
+            .attr('d', line);
+
+          if (s.crash) {
+            var last = s.data[s.data.length - 1];
+            var cx = x(last[0]), cy = yScale(last[1]);
+            g.append('line').attr('x1',cx-4).attr('y1',cy-4).attr('x2',cx+4).attr('y2',cy+4)
+              .attr('stroke', s.color).attr('stroke-width', 2.5);
+            g.append('line').attr('x1',cx-4).attr('y1',cy+4).attr('x2',cx+4).attr('y2',cy-4)
+              .attr('stroke', s.color).attr('stroke-width', 2.5);
+            g.append('text').attr('x', cx + 8).attr('y', cy + 4)
+              .attr('font-size', 10).attr('font-family', 'Geist Mono, monospace')
+              .attr('fill', s.color).text('eviction');
+          }
+        });
+
+        // Legend
+        if (cfg.series.length > 1) {
+          var lg = g.append('g')
+            .attr('transform', 'translate(8,8)');
+          cfg.series.forEach(function(s, i) {
+            var ly = i * 18;
+            lg.append('line').attr('x1',0).attr('y1',ly).attr('x2',16).attr('y2',ly)
+              .attr('stroke', s.color).attr('stroke-width', 2);
+            lg.append('text').attr('x', 22).attr('y', ly + 4)
+              .attr('font-size', 11).attr('font-family', 'Geist, sans-serif')
+              .attr('fill', C.label).text(s.label);
+          });
+        }
+      }
+
+      // Chart 1: Direct — no spool
+      chart('chart-direct', {
+        xMax: 76,
+        yMax: 35000,
+        yFmt: d3.format('~s'),
+        yLabel: 'lag (events)',
+        series: [
+          {data: directLag, color: C.direct, label: 'Lag', crash: true}
+        ]
+      });
+
+      // Chart 2: Spooled — dual axis
+      var spoolMB = spoolRaw.map(function(d) { return [d[0], d[1] / 1048576]; });
+      chart('chart-spooled', {
+        xMax: 76,
+        yMax: 35000,
+        yFmt: d3.format('~s'),
+        yLabel: 'lag (events)',
+        y2Max: 25,
+        y2Fmt: function(d) { return d + ' MB'; },
+        y2Label: '',
+        series: [
+          {data: spooledLag, color: C.lag, label: 'Lag'},
+          {data: spoolMB, color: C.spool, label: 'Spool', axis: 'right'}
+        ]
+      });
+    })();
+    </script>
+    </body>
+</html>
