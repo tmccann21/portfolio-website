@@ -1,0 +1,397 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <title>Dice Game | Trevor McCann</title>
+        <meta name="description" content="A statistical analysis of the dice game known as 10 000s">
+        <meta name="author" content="Trevor McCann">
+        <meta name="keywords" content="Statistics, Dice, Game Theory, Probability, Farkle, Zilch">
+        <meta content="width=device-width, initial-scale=1" name="viewport" />
+        <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <link rel="shortcut icon" href="/favicon.ico" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+        <meta name="apple-mobile-web-app-title" content="tr" />
+        <link rel="canonical" href="https://trevormccann.com/articles/dicegame.html" />
+
+        <!-- Open Graph -->
+        <meta property="og:title" content="Dice Game" />
+        <meta property="og:description" content="A statistical analysis of the dice game known as 10 000s" />
+        <meta property="og:type" content="article" />
+        <meta property="og:url" content="https://trevormccann.com/articles/dicegame.html" />
+
+        <!-- Twitter Card -->
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:title" content="Dice Game" />
+        <meta name="twitter:description" content="A statistical analysis of the dice game known as 10 000s" />
+
+        <!-- Structured Data -->
+        <script type="application/ld+json">
+        {
+          "@context": "https://schema.org",
+          "@type": "Article",
+          "headline": "Dice Game",
+          "description": "A statistical analysis of the dice game known as 10 000s",
+          "url": "https://trevormccann.com/articles/dicegame.html",
+          "author": {
+            "@type": "Person",
+            "name": "Trevor McCann",
+            "url": "https://trevormccann.com/"
+          }
+        }
+        </script>
+
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+        <link rel="stylesheet" type="text/css" href="../style/main.css">
+        <link rel="stylesheet" type="text/css" href="../style/article.css">
+
+        <!-- KaTeX — remove if no math is needed -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+        <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+        <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+
+        <!-- D3 — remove if no charts are needed -->
+        <script src="https://d3js.org/d3.v7.min.js"></script>
+
+        <style>
+            .katex-display { font-size: 0.85em; }
+        </style>
+    </head>
+    <body>
+        <div id="content">
+            <article>
+            <div class="article-header">
+                <a href="../index.html" class="article-header-name">Trevor McCann</a>
+                <a href="../index.html" class="article-header-back">← More posts</a>
+            </div>
+            <div class="article-title">
+                <h1>Dice Game</h1>
+            </div>
+            <div class="article-subtitle">A statistical analysis of the winning strategy in Dice Game<span class="separator">·</span> <span class="date">2026</span></div>
+            <div class="article-divider"></div>
+            <div class="article-content">
+                <p class="article-paragraph">
+                    <span class="tab" />My friends and I have a game we like to play which we've affectionately come to refer to as Dice Game.
+                    It was introduced as 10 000; I've learned it can also be called Farkle or Zilch, but to me it will only be Dice Game. The
+                    rules are:
+                    <ul>
+                        <li>You win the game by getting to 10 000 points<sup>1</sup></li>
+                        <li>Each turn you must score one or more dice by setting them aside and adding to your turn's score</li>
+                        <ul>
+                            <li><span class="emphasis">5s</span> are worth <span class="emphasis">50</span> each</li>
+                            <li><span class="emphasis">1s</span> are worth <span class="emphasis">100</span> each</li>
+                            <li><span class="emphasis">three of a kind</span> is worth <span class="emphasis">100 × face number</span></li>
+                            <li><span class="emphasis">three 1s</span> is worth <span class="emphasis">1000</span></li>
+                            <li>groups <span class="emphasis">double</span> for each additional die</li>
+                            <li><span class="emphasis">1 2 3 4 5 6</span> is worth <span class="emphasis">1500</span></li>
+                        </ul>
+                        <li>If you score all six dice, you can start over and continue adding to your turn's score</li>
+                        <li>If you roll any number of dice and none of them score, you've busted and your turn ends</li>
+                        <li>You bank points by choosing to stop rolling before you've busted. When you do this, you add your turn's score to your total score.<sup>2</sup></li>
+                        <li>
+                            <span class="emphasis">Piggybacking.</span> After you bank your points, the next player can choose to
+                            continue rolling from where you left off. They inherit your turn's score and any dice remaining. They must
+                            roll at least once - they cannot simply take your points and pass. You must be on the board to piggyback.
+                        </li>
+                    </ul>
+                    <div class="rules-expand collapsed">footnotes</div>
+                    <ol class="rules-extra" style="display:none;">
+                        <li>in order to win, you must get <span style="font-style: italic;">exactly</span>&nbsp;10 000 points. If the dice you
+                        roll bring your score over 10 000, you bust. You may choose to keep a scoring subset, so long as it does not exceed
+                        10 000</li>
+                        <li>in order to bank points, you must first be <span class="emphasis">on the board</span>. To get on the board, you
+                        must bank 750 points in a single turn; until then you must keep rolling.</li>
+                    </ol>
+                </p>
+                <h3> Perfect Play vs. Recursion </h3>
+                <p class="article-paragraph">
+                    <span class="tab" />Without the re-rolling rule, calculating the EV for any decision is straightforward. Take the case where
+                    we've scored five dice and have one left to roll. There's a \(\frac{2}{3}\) chance we lose our current total
+                    (roll a 2, 3, 4, or 6), a \(\frac{1}{6}\) chance we add 50, and a \(\frac{1}{6}\) chance we add 100. Let \(v(n)\) denote the expected gain from rolling \(n\) dice (the weighted upside).
+                    The net expected value of rolling, \(ev(1) = v(1) - score\), is positive when the upside outweighs what you'd forfeit by busting.
+                    </br></br>
+                    <span class="tab" />With the re-roll rule however, we introduce a recursive term. Now rolling a one would net us 100 points
+                    for the 1, plus the value of \(v(6)\), the weighted upside of rolling all six dice again. My initial fear was that the only
+                    way to solve this was unrolling the recursion out until we'd exceed 10 000 points, therefore ending the game.
+                    </br></br>
+                    <span class="tab" />Instead, there's a much more elegant solution - ignore it. We express \(v(1)\) in terms of a
+                    constant + \(v(6)\), which we then use to express \(v(2)\) as the upside of scoring both dice + \(v(6)\) and the upside
+                    of scoring 1 dice + \(v(1)\) (which we've just defined as a constant + a linear scaling of \(v(6)\)). We can then expand
+                    and simplify to once again get a constant + a linear scaling of \(v(6)\). We repeat this for \(v(3)\) through \(v(6)\)
+                    which in the end gives us:
+
+                    $$\begin{aligned}
+                    v(6) &= \epsilon + \lambda\, v(6) \\
+                    v(6) &= \frac{\epsilon}{1-\lambda}
+                    \end{aligned}$$
+
+                    Which solves directly, since we know \(\lambda\) and \(\epsilon\). Plugging back into each \(v(x)\) gives the expected
+                    upside per die count. \(v(1)\) through \(v(4)\) were solved by hand; beyond that the permutations grow enough that
+                    a numerical approach is easier, but more on that shortly.
+                </p>
+                <h3> Starting Small </h3>
+                <p class="article-paragraph">
+                    <span class="tab" />The first case: five dice scored, one remaining. The upside is the chance of scoring the last die
+                    plus the value of re-rolling all six. Only two faces score here, a one or a five.
+                    $$
+                    \begin{aligned}
+                    v(1) &= \frac{50 + v(6)}{6} + \frac{100 + v(6)}{6} \\
+                         &= \frac{150 + 2v(6)}{6} \\
+                         &= 25 + \frac{v(6)}{3}
+                    \end{aligned}
+                    $$
+                    With this in hand, we can tackle the four dice scored, two to roll case. Substituting our value for \(v(1)\) at the end.
+                    $$\begin{aligned}
+                    v(2) &= \frac{100 + v(6)}{6^2}      &&\text{roll two 5s + re-roll} \\
+                         &+ \frac{2(150 + v(6))}{6^2}   &&\text{roll one 1, one 5 + re-roll} \\
+                         &+ \frac{200 + v(6)}{6^2}      &&\text{roll two 1s + re-roll} \\
+                         &+ \frac{8(50 + v(1))}{6^2}    &&\text{roll one 5 + } v(1) \\
+                         &+ \frac{8(100 + v(1))}{6^2}   &&\text{roll one 1 + } v(1) \\[10pt]
+                         &= \frac{2200}{36} + \frac{7\,v(6)}{27} &&\text{substitute } v(1)\text{, simplify}
+                    \end{aligned}$$
+                    For \(v(3)\), the process is the same; we multiply each scoring permutation by its likelihood.
+
+                    $$\begin{aligned}
+                    v(3) &= \frac{4350 + 12\,v(6)}{6^3}  &&\text{all 3 score + re-roll} \\
+                         &+ \frac{7200 + 48\,v(1)}{6^3}  &&\text{2 score + } v(1) \\
+                         &+ \frac{7200 + 96\,v(2)}{6^3}  &&\text{1 scores + } v(2) \\[10pt]
+                         &= \frac{116175}{972} + \frac{238\,v(6)}{972}
+                    \end{aligned}$$
+                </p>
+                <h3>Four Dice</h3>
+                <p class="article-paragraph">
+                    <span class="tab" />For \(v(4)\), the full set of scoring permutations is enumerated below.
+                    Here \(n, n' \in \{2,3,4,6\}\) are non-scoring faces with \(n \neq n'\), and \(n_1, n_2, n_3\) are
+                    non-scoring faces not all equal (since equal would form a triple, already counted above). The table
+                    headers describe the total number of scoring outcomes (count) and the total score earned by those
+                    outcomes (score).
+                </p>
+                <table class="math-table">
+                    <thead>
+                        <tr>
+                            <th>Outcome</th>
+                            <th class="count">Count</th>
+                            <th>Score</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="group-row"><td>Re-roll</td><td class="count">52</td><td>28,800</td></tr>
+                        <tr><td>\((1,1,1,1)\)</td><td class="count">1</td><td>\(2000\)</td></tr>
+                        <tr><td>\((5,5,5,5)\)</td><td class="count">1</td><td>\(1000\)</td></tr>
+                        <tr><td>\((1,1,1,5)\)</td><td class="count">4</td><td>\(1050\)</td></tr>
+                        <tr><td>\((5,5,5,1)\)</td><td class="count">4</td><td>\(600\)</td></tr>
+                        <tr><td>\((1,1,5,5)\)</td><td class="count">6</td><td>\(300\)</td></tr>
+                        <tr><td>\((n,n,n,n)\)</td><td class="count">4</td><td>\(200n\)</td></tr>
+                        <tr><td>\((n,n,n,5)\)</td><td class="count">16</td><td>\(100n+50\)</td></tr>
+                        <tr><td>\((n,n,n,1)\)</td><td class="count">16</td><td>\(100n+100\)</td></tr>
+                        <tr class="group-row"><td>+ v(1)</td><td class="count">176</td><td>63,600</td></tr>
+                        <tr><td>\((n,n,n,n')\)</td><td class="count">48</td><td>\(100n\)</td></tr>
+                        <tr><td>\((1,1,1,n)\)</td><td class="count">16</td><td>\(1000\)</td></tr>
+                        <tr><td>\((5,5,5,n)\)</td><td class="count">16</td><td>\(500\)</td></tr>
+                        <tr><td>\((1,1,5,n)\)</td><td class="count">48</td><td>\(250\)</td></tr>
+                        <tr><td>\((5,5,1,n)\)</td><td class="count">48</td><td>\(200\)</td></tr>
+                        <tr class="group-row"><td>+ v(2)</td><td class="count">384</td><td>57,600</td></tr>
+                        <tr><td>\((1,1,n_1,n_2)\)</td><td class="count">96</td><td>\(200\)</td></tr>
+                        <tr><td>\((5,5,n_1,n_2)\)</td><td class="count">96</td><td>\(100\)</td></tr>
+                        <tr><td>\((1,5,n_1,n_2)\)</td><td class="count">192</td><td>\(150\)</td></tr>
+                        <tr class="group-row"><td>+ v(3)</td><td class="count">480</td><td>36,000</td></tr>
+                        <tr><td>\((1,n_1,n_2,n_3)\)</td><td class="count">240</td><td>\(100\)</td></tr>
+                        <tr><td>\((5,n_1,n_2,n_3)\)</td><td class="count">240</td><td>\(50\)</td></tr>
+                    </tbody>
+                </table>
+                <p class="article-paragraph">
+                    Writing out each of these enumerated cases, and simplifying down to a constant and \(v(6)\) term we
+                    get.
+                </p>
+                $$v(4) = \frac{21970200}{104976} + \frac{26548\,v(6)}{104976}$$
+                <h3>The Greedy Assumption</h3>
+                <p class="article-paragraph">
+                    Until now we've assumed the greedy approach is always best. The four dice case is the first place
+                    that breaks down. Roll \((1,5,n_1,n_2)\): do we keep both the 1 and 5, or just the 1? For the greedy choice to be
+                    optimal we need \(v(3) - v(2) < 50\).
+                    $$\begin{aligned}
+                    v(3) - v(2) &= \left(\frac{116175}{972} + \frac{238\,v(6)}{972}\right) - \left(\frac{2200}{36} +
+                    \frac{7\,v(6)}{27}\right) \\
+                                 &= \frac{116175 - 59400}{972} + \frac{238 - 252}{972}v(6) \\
+                                 &= \frac{56775 - 14\,v(6)}{972}
+                    \end{aligned}$$
+                    The greedy choice holds only when \(v(6) > 8175/14 \approx 584\). We don't know \(v(6)\) yet,
+                    so we carry the assumption forward and switch to a computational solver.
+                </p>
+                <h3>Computational Solution</h3>
+                <p class="article-paragraph">
+                    <span class="tab" />Conditional choices (and increasingly ugly fractions) make solving by hand a much more tedious proposition.
+                    In order to continue solving Dice Game, we need to show that across all possible decisions we've found the optimal solution. In this
+                    case, we need to solve for \(v(6)\) following both the greedy and non-greedy paths until a numerically stable solution is found. We can imagine
+                    that as the decision space gets bigger with more dice to roll this leads to a combinatorial explosion of the number of outcomes to explore.
+                    To make this tractable, we'll instead write a computational solver to evaluate solutions much more quickly. In pseudocode, the algorithm
+                    works like this:
+                </p>
+                <pre class="pseudocode">V[6] = 0
+
+repeat until |V[6] - V[6]_prev| < ε:
+    V[1..3] = closed-form expressions in terms of V[6]
+
+    for n in {4, 5, 6}:
+        for each outcome in all 6^n rolls:
+            best_ev = 0
+            for each valid keep strategy:
+                remaining = n - dice kept
+                ev = score(kept) + (V[6] if remaining == 0 else V[remaining])
+                best_ev = max(best_ev, ev)
+        V[n] = mean(best_ev) over all outcomes</pre>
+                <p class="article-paragraph">
+                    Since the 6-dice case only has \(6^6\) possible enumerations, this search runs and converges quickly. The following
+                    are our expected gains from rolling \(n\) dice, including the possibility of resetting all six dice.
+                </p>
+                <div class="stat-grid">
+                    <div class="stat"><span class="stat-label">v(1)</span><span class="stat-value">268</span></div>
+                    <div class="stat"><span class="stat-label">v(2)</span><span class="stat-value">250</span></div>
+                    <div class="stat"><span class="stat-label">v(3)</span><span class="stat-value">298</span></div>
+                    <div class="stat"><span class="stat-label">v(4)</span><span class="stat-value">394</span></div>
+                    <div class="stat"><span class="stat-label">v(5)</span><span class="stat-value">539</span></div>
+                    <div class="stat highlight"><span class="stat-label">v(6)</span><span class="stat-value">730</span></div>
+                </div>
+                <p class="article-paragraph">
+                    The first result which stands out from this is of course that \(v(2) < v(1)\). This makes some sense intuitively;
+                    there's not many points to earn with just two dice so the lower probability of getting to a re-roll dominates. We can
+                    solve for the exact value of \(v(6)\) at which two dice expects to score less than one dice:
+                    <br/>
+                </p>
+                $$\begin{aligned}
+                \frac{2200}{36} + \frac{7\,v(6)}{27} &< 25 + \frac{v(6)}{3} \\[6pt]
+                \frac{1300}{36} &< \frac{2\,v(6)}{27} \\[6pt]
+                v(6) &> \frac{35100}{72} = 487.5
+                \end{aligned}$$
+                <p class="article-paragraph">
+                    This demonstrates \(v(2) < v(1)\) in any scenario where \(v(6) > 487.5\)
+                </p>
+                <h3>Non-Greedy Cases</h3>
+                <p class="article-paragraph">
+                    <span class="tab"/>Our earlier conditional that the greedy choice is optimal in the four-dice case when \(v(6) > 584\) is satisfied,
+                    but this was only the first real non-greedy option we had to evaluate. The options in the 5 and 6-dice cases are
+                    much more interesting, and indeed with our computed value of \(v(6)\) we encounter the first cases where the non-greedy
+                    option yields a higher expected value.
+                    <br/><br/>
+                    <span class="tab"/>Consider the scenario where a player has five dice to roll. They roll two fives, and three non-scoring dice.
+                    We faced similar decisions before with four dice, but we've since run the computational solver to get the actual value of \(v(6)\),
+                    so we can now evaluate this decision directly.
+                    $$\begin{aligned}
+                    50 + v(4) &> 100 + v(3) \\
+                    v(4) - v(3) &> 50 \\
+                    96 &> 50
+                    \end{aligned}$$
+                    In this case, it's better to keep one five and re-roll four dice over keeping two fives and re-rolling three.
+                    The case with a one and a five reduces to the same conditional, but the greedy decision still narrowly holds
+                    for the case with two ones as seen by the following contradiction.
+                    $$\begin{aligned}
+                    100 + v(4) &> 200 + v(3) \\
+                    v(4) - v(3) &> 100 \\
+                    96 &> 100
+                    \end{aligned}$$
+                </p>
+                <p class="article-paragraph">
+                    <span class="tab"/>With six dice, we opt for the non-greedy case any time we roll exactly two scoring dice. In these
+                    cases \(v(5) - v(4) = 145\) is greater than any single dice would add so it's always optimal to re-roll five dice over four.
+                </p>
+                <p class="article-paragraph">
+                    <span class="tab"/>The final edge case to consider is rolling three twos, one one and two non-scoring dice. Our choices are
+                    keep three twos, keep the one, or keep everything. By keeping everything we expect \(300 + v(2) = 550\). Keeping just
+                    the twos we expect \(200 + v(3) = 498 \) and keeping the one we expect \(100 + v(5) = 639\), our winning decision.
+                    This does not hold for any groups of higher value; we see with triple threes that the greedy case is now worth
+                    \(400 + v(2) = 650\), narrowly beating out the non-greedy option.
+                </p>
+                <h3>How to Win At Dice Game</h3>
+                <p class="article-paragraph">
+                    <span class="tab"/>Understanding the expected score for rolling a number of dice, and analyzing cases where
+                    the player should be non-greedy build the foundation for perfect play, but they don't answer the question of
+                    <span style="font-style: italic;">What should I do on my turn?</span>&nbsp;To know that, we need one more thing:
+                    the probability of busting (scoring no dice) for any number of dice. The following were obtained computationally
+                    by enumerating every possible roll.
+                </p>
+                <div class="stat-grid" style="margin-top: 8px;">
+                    <div class="stat"><span class="stat-label">bust (1)</span><span class="stat-value">66.7%</span></div>
+                    <div class="stat"><span class="stat-label">bust (2)</span><span class="stat-value">44.4%</span></div>
+                    <div class="stat"><span class="stat-label">bust (3)</span><span class="stat-value">27.8%</span></div>
+                    <div class="stat"><span class="stat-label">bust (4)</span><span class="stat-value">15.7%</span></div>
+                    <div class="stat"><span class="stat-label">bust (5)</span><span class="stat-value">7.7%</span></div>
+                    <div class="stat"><span class="stat-label">bust (6)</span><span class="stat-value">3.1%</span></div>
+                </div>
+                <p class="article-paragraph">
+                    Applied to banking, this is the same formula from earlier: \(ev(n) = v(n) - score \cdot p_\text{bust}(n)\). Rolling
+                    gives upside \(v(n)\); busting costs your current score with probability \(p_\text{bust}(n)\). Setting this to zero
+                    and solving for score gives the threshold above which banking beats rolling.
+                </p>
+                <div class="stat-grid compact" style="margin-top: 8px;">
+                    <div class="stat"><span class="stat-label">bank (1)</span><span class="stat-value">402</span></div>
+                    <div class="stat"><span class="stat-label">bank (2)</span><span class="stat-value">563</span></div>
+                    <div class="stat"><span class="stat-label">bank (3)</span><span class="stat-value">1,073</span></div>
+                    <div class="stat"><span class="stat-label">bank (4)</span><span class="stat-value">2,502</span></div>
+                    <div class="stat"><span class="stat-label">bank (5)</span><span class="stat-value">6,980</span></div>
+                    <div class="stat highlight"><span class="stat-label">bank (6)</span><span class="stat-value">never</span></div>
+                </div>
+                <h3>Piggybacking</h3>
+                <p class="article-paragraph">
+                    The other key decision a player of Dice Game needs to make is whether to piggyback or start fresh. At this moment, we don't
+                    have the choice of stopping to bank our points, so instead we compare the expected value of each. Starting fresh gives
+                    you \(v(6) = 730\) in expectation. With inherited score \(S\) and \(n\) dice, piggybacking yields \((1 - p_\text{bust}(n)) \cdot S + v(n)\) in
+                    expectation; we prefer it whenever \(S > (v(6) - v(n)) / (1 - p_\text{bust}(n))\). The thresholds for each number of
+                    dice passed to you:
+                </p>
+                <div class="stat-grid compact" style="margin-top: 8px;">
+                    <div class="stat"><span class="stat-label">piggyback (1)</span><span class="stat-value">1,387</span></div>
+                    <div class="stat"><span class="stat-label">piggyback (2)</span><span class="stat-value">863</span></div>
+                    <div class="stat"><span class="stat-label">piggyback (3)</span><span class="stat-value">598</span></div>
+                    <div class="stat"><span class="stat-label">piggyback (4)</span><span class="stat-value">399</span></div>
+                    <div class="stat"><span class="stat-label">piggyback (5)</span><span class="stat-value">207</span></div>
+                    <div class="stat highlight"><span class="stat-label">piggyback (6)</span><span class="stat-value">always</span></div>
+                </div>
+                <h3>Summary</h3>
+                <p class="article-paragraph">
+                    So far we've covered the optimal strategy for a single player's turn in a vacuum in Dice Game. In reality, the game
+                    is much more complex and truly optimal play involves considering not just your position but the positions of your
+                    opponents. The key ideas here should go pretty far in beating your friends at Dice Game/Farkle/Zilch, but a complete
+                    analysis of perfect play requires digging deeper into strategies with multiple players at different stages in the game.
+                    In a follow up, I'd like to simulate a tournament of bots playing against each other with different strategies and risk
+                    levels. For now, remember: one die is better than two, bank when you've got good points, and piggyback when your
+                    friend hands you too many dice.
+                </p>
+                <div class="article-divider" style="margin-top: 64px;"></div>
+                <div class="article-footer-nav">
+                    <a href="../index.html" class="nav-link"><span class="nav-arrow">←</span> More posts</a>
+                    <a href="./mongopuff.html" class="nav-link">mongopuff <span class="nav-arrow">→</span></a>
+                </div>
+                <div class="article-footer-text">Trevor McCann</div>
+            </div>
+            </article>
+        </div>
+        <script>
+            const rulesToggle = document.querySelector('.rules-expand');
+            if (rulesToggle) {
+                rulesToggle.addEventListener('click', () => {
+                    rulesToggle.classList.toggle('collapsed');
+                    const extra = document.querySelector('.rules-extra');
+                    extra.style.display = extra.style.display === 'none' ? '' : 'none';
+                });
+            }
+
+            document.querySelectorAll('.math-table .group-row').forEach(groupRow => {
+                groupRow.classList.add('collapsed');
+                let next = groupRow.nextElementSibling;
+                while (next && !next.classList.contains('group-row')) {
+                    next.style.display = 'none';
+                    next = next.nextElementSibling;
+                }
+
+                groupRow.addEventListener('click', () => {
+                    groupRow.classList.toggle('collapsed');
+                    let next = groupRow.nextElementSibling;
+                    while (next && !next.classList.contains('group-row')) {
+                        next.style.display = next.style.display === 'none' ? '' : 'none';
+                        next = next.nextElementSibling;
+                    }
+                });
+            });
+        </script>
+    </body>
+</html>
